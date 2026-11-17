@@ -141,6 +141,7 @@ class OAA_Brief {
 		update_post_meta( $post_id, '_oaa_brief', wp_slash( wp_json_encode( $b ) ) );
 		update_post_meta( $post_id, '_oaa_source', $source );
 		update_post_meta( $post_id, '_oaa_ref', $ref );
+		update_post_meta( $post_id, '_oaa_status', 'new' );
 		if ( $transcript ) {
 			update_post_meta( $post_id, '_oaa_transcript', wp_slash( $transcript ) );
 		}
@@ -335,8 +336,185 @@ class OAA_Brief {
 		}
 	}
 
+	/* ---------- admin: inbox experience ---------- */
+
+	public static function statuses() {
+		return array(
+			'new'       => 'New',
+			'read'      => 'Read',
+			'contacted' => 'Contacted',
+			'proposal'  => 'Proposal sent',
+			'won'       => 'Won',
+			'closed'    => 'Closed',
+		);
+	}
+
+	public static function status_of( $post_id ) {
+		$s = get_post_meta( $post_id, '_oaa_status', true );
+		return isset( self::statuses()[ $s ] ) ? $s : 'read';
+	}
+
+	public static function count_new() {
+		$q = new WP_Query(
+			array(
+				'post_type'      => self::CPT,
+				'post_status'    => 'any',
+				'meta_key'       => '_oaa_status', // phpcs:ignore
+				'meta_value'     => 'new', // phpcs:ignore
+				'fields'         => 'ids',
+				'posts_per_page' => 1,
+				'no_found_rows'  => false,
+			)
+		);
+		return (int) $q->found_posts;
+	}
+
+	/** "AI Briefs (3)" style badge for unread briefs. */
+	public static function menu_badge() {
+		global $menu;
+		$n = self::count_new();
+		if ( ! $n || ! is_array( $menu ) ) {
+			return;
+		}
+		foreach ( $menu as $i => $item ) {
+			if ( isset( $item[2] ) && 'edit.php?post_type=' . self::CPT === $item[2] ) {
+				$menu[ $i ][0] .= ' <span class="awaiting-mod count-' . $n . '"><span class="pending-count">' . $n . '</span></span>'; // phpcs:ignore
+			}
+		}
+	}
+
+	public static function columns( $cols ) {
+		return array(
+			'cb'           => $cols['cb'],
+			'title'        => 'Brief',
+			'oaa_customer' => 'Customer',
+			'oaa_urgency'  => 'Urgency',
+			'oaa_source'   => 'Source',
+			'oaa_status'   => 'Status',
+			'date'         => 'Received',
+		);
+	}
+
+	public static function column( $col, $post_id ) {
+		$b = json_decode( (string) get_post_meta( $post_id, '_oaa_brief', true ), true );
+		$b = $b ? self::normalize( $b ) : null;
+		switch ( $col ) {
+			case 'oaa_customer':
+				if ( $b ) {
+					$c = $b['customer'];
+					echo '<strong>' . esc_html( $c['name'] ) . '</strong>' . ( $c['company'] ? '<br>' . esc_html( $c['company'] ) : '' );
+					echo '<br><a href="mailto:' . esc_attr( $c['email'] ) . '">' . esc_html( $c['email'] ) . '</a>';
+					$wa = preg_replace( '/\D+/', '', $c['phone'] );
+					if ( strlen( $wa ) >= 8 ) {
+						echo ' · <a href="https://wa.me/' . esc_attr( $wa ) . '" target="_blank" rel="noopener">WhatsApp</a>';
+					}
+				}
+				break;
+			case 'oaa_urgency':
+				if ( $b ) {
+					$colors = array( 'low' => '#6b7280', 'medium' => '#2563eb', 'high' => '#d97706', 'critical' => '#dc2626' );
+					echo '<span style="display:inline-block;padding:2px 8px;border-radius:999px;color:#fff;font-size:12px;background:' . esc_attr( $colors[ $b['urgency'] ] ) . '">' . esc_html( ucfirst( $b['urgency'] ) ) . '</span>';
+				}
+				break;
+			case 'oaa_source':
+				echo 'form' === get_post_meta( $post_id, '_oaa_source', true ) ? 'Form' : 'AI chat';
+				break;
+			case 'oaa_status':
+				$s = self::status_of( $post_id );
+				$st = 'new' === $s ? 'font-weight:700;color:#2e8a0e' : '';
+				echo '<span style="' . esc_attr( $st ) . '">' . esc_html( self::statuses()[ $s ] ) . '</span>';
+				break;
+		}
+	}
+
+	/** Bold rows for unread briefs. */
+	public static function admin_css() {
+		$screen = get_current_screen();
+		if ( ! $screen || self::CPT !== $screen->post_type ) {
+			return;
+		}
+		echo '<style>.post-type-oaa_brief tr.oaa-new .row-title{font-weight:800}.post-type-oaa_brief tr.oaa-new{box-shadow:inset 3px 0 0 #2e8a0e}.post-type-oaa_brief .column-oaa_customer{width:24%}.post-type-oaa_brief .column-oaa_urgency,.post-type-oaa_brief .column-oaa_source,.post-type-oaa_brief .column-oaa_status{width:10%}</style>';
+	}
+
+	public static function row_class( $classes, $class, $post_id ) {
+		if ( is_admin() && self::CPT === get_post_type( $post_id ) && 'new' === self::status_of( $post_id ) ) {
+			$classes[] = 'oaa-new';
+		}
+		return $classes;
+	}
+
+	/** Status filter above the list. */
+	public static function filter_dropdown( $post_type ) {
+		if ( self::CPT !== $post_type ) {
+			return;
+		}
+		$cur = isset( $_GET['oaa_status'] ) ? sanitize_key( $_GET['oaa_status'] ) : ''; // phpcs:ignore
+		echo '<select name="oaa_status"><option value="">All statuses</option>';
+		foreach ( self::statuses() as $k => $l ) {
+			echo '<option value="' . esc_attr( $k ) . '"' . selected( $cur, $k, false ) . '>' . esc_html( $l ) . '</option>';
+		}
+		echo '</select>';
+	}
+
+	public static function apply_filter( $query ) {
+		if ( ! is_admin() || ! $query->is_main_query() || self::CPT !== $query->get( 'post_type' ) ) {
+			return;
+		}
+		$s = isset( $_GET['oaa_status'] ) ? sanitize_key( $_GET['oaa_status'] ) : ''; // phpcs:ignore
+		if ( $s && isset( self::statuses()[ $s ] ) ) {
+			if ( 'read' === $s ) {
+				$query->set( 'meta_query', array( 'relation' => 'OR', array( 'key' => '_oaa_status', 'value' => 'read' ), array( 'key' => '_oaa_status', 'compare' => 'NOT EXISTS' ) ) );
+			} else {
+				$query->set( 'meta_key', '_oaa_status' );
+				$query->set( 'meta_value', $s );
+			}
+		}
+	}
+
 	public static function meta_boxes() {
 		add_meta_box( 'oaa_brief_view', 'Project Brief', array( __CLASS__, 'render_box' ), self::CPT, 'normal', 'high' );
+		add_meta_box( 'oaa_brief_status', 'Follow-up', array( __CLASS__, 'render_status_box' ), self::CPT, 'side', 'high' );
+	}
+
+	public static function render_status_box( $post ) {
+		wp_nonce_field( 'oaa_status_' . $post->ID, 'oaa_status_nonce' );
+		$cur = self::status_of( $post->ID );
+		if ( 'new' === $cur ) {
+			$cur = 'read'; // viewing this screen marks the brief as read
+		}
+		echo '<p><label for="oaa_status_field"><strong>Status</strong></label><br><select id="oaa_status_field" name="oaa_status_field" style="width:100%">';
+		foreach ( self::statuses() as $k => $l ) {
+			echo '<option value="' . esc_attr( $k ) . '"' . selected( $cur, $k, false ) . '>' . esc_html( $l ) . '</option>';
+		}
+		echo '</select></p>';
+		echo '<p><label for="oaa_note_field"><strong>Internal note</strong></label><textarea id="oaa_note_field" name="oaa_note_field" rows="5" style="width:100%">' . esc_textarea( (string) get_post_meta( $post->ID, '_oaa_note', true ) ) . '</textarea></p>';
+		$b = json_decode( (string) get_post_meta( $post->ID, '_oaa_brief', true ), true );
+		if ( $b ) {
+			$b    = self::normalize( $b );
+			$subj = rawurlencode( 'Re: ' . $b['title'] . ' (' . get_post_meta( $post->ID, '_oaa_ref', true ) . ')' );
+			echo '<p><a class="button" style="width:100%;text-align:center" href="mailto:' . esc_attr( $b['customer']['email'] ) . '?subject=' . esc_attr( $subj ) . '">Reply by email</a></p>';
+			$wa = preg_replace( '/\D+/', '', $b['customer']['phone'] );
+			if ( strlen( $wa ) >= 8 ) {
+				echo '<p><a class="button" style="width:100%;text-align:center" target="_blank" rel="noopener" href="https://wa.me/' . esc_attr( $wa ) . '">Chat on WhatsApp</a></p>';
+			}
+		}
+		echo '<p class="description">Click “Update” to save the status and note.</p>';
+	}
+
+	public static function save_status( $post_id ) {
+		if ( ! isset( $_POST['oaa_status_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['oaa_status_nonce'] ) ), 'oaa_status_' . $post_id ) ) {
+			return;
+		}
+		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+		$s = isset( $_POST['oaa_status_field'] ) ? sanitize_key( $_POST['oaa_status_field'] ) : '';
+		if ( isset( self::statuses()[ $s ] ) ) {
+			update_post_meta( $post_id, '_oaa_status', $s );
+		}
+		if ( isset( $_POST['oaa_note_field'] ) ) {
+			update_post_meta( $post_id, '_oaa_note', sanitize_textarea_field( wp_unslash( $_POST['oaa_note_field'] ) ) );
+		}
 	}
 
 	public static function render_box( $post ) {
@@ -344,6 +522,9 @@ class OAA_Brief {
 		if ( ! $b ) {
 			echo '<p>No data.</p>';
 			return;
+		}
+		if ( 'new' === get_post_meta( $post->ID, '_oaa_status', true ) ) {
+			update_post_meta( $post->ID, '_oaa_status', 'read' ); // opening a brief marks it as read
 		}
 		$ref = get_post_meta( $post->ID, '_oaa_ref', true );
 		$pdf = get_post_meta( $post->ID, '_oaa_pdf', true );

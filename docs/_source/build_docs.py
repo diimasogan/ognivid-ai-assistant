@@ -148,7 +148,7 @@ def content():
         section("features", T("Features", "Fitur"),
             grid([card("chat", T("Consultative interview", "Wawancara konsultatif"), T("Short replies, focused follow-ups, about 6–10 questions, then a summary to confirm.", "Balasan singkat, pertanyaan lanjutan yang terarah, sekitar 6–10 pertanyaan, lalu ringkasan untuk dikonfirmasi.")),
                   card("doc", T("Email + PDF", "Email + PDF"), T("A clean HTML email and an A4 PDF for the team, plus a copy for the customer.", "Email HTML yang rapi dan PDF A4 untuk tim, plus salinan untuk pelanggan.")),
-                  card("list", T("Saved in wp-admin", "Tersimpan di wp-admin"), T("AI Briefs keeps every brief, the transcript and a protected PDF download.", "AI Briefs menyimpan setiap brief, transkrip, dan unduhan PDF yang terlindungi.")),
+                  card("list", T("Admin inbox", "Inbox di wp-admin"), T("AI Briefs lists every brief with customer, urgency, source and status, an unread badge in the menu, a status filter, the full transcript, a protected PDF download, internal notes and one-click reply by email or WhatsApp.", "AI Briefs menampilkan setiap brief beserta pelanggan, urgensi, sumber, dan status, badge pesan baru di menu, filter status, transkrip lengkap, unduhan PDF yang terlindungi, catatan internal, serta balas sekali klik lewat email atau WhatsApp.")),
                   card("globe", T("Bilingual", "Dua bahasa"), T("Follows the page language (English or Indonesian) and switches with the visitor.", "Mengikuti bahasa halaman (Inggris atau Indonesia) dan berpindah mengikuti pengunjung.")),
                   card("layers", T("Provider-agnostic", "Tidak terkunci provider"), T("Claude by default; Gemini, Groq, OpenRouter or any OpenAI-compatible endpoint as alternatives.", "Claude secara bawaan; Gemini, Groq, OpenRouter, atau endpoint OpenAI-compatible sebagai alternatif.")),
                   card("bolt", T("Never loses a lead", "Tidak kehilangan calon klien"), T("Automatic form fallback when AI is unavailable or a limit is reached.", "Formulir cadangan otomatis saat AI tidak tersedia atau batas tercapai."), True)])),
@@ -166,7 +166,8 @@ def content():
                 T("In wp-admin go to <strong>Plugins → Add New → Upload Plugin</strong>, upload the ZIP and activate <strong>OGNIVID AI Assistant</strong>.", "Di wp-admin buka <strong>Plugins → Add New → Upload Plugin</strong>, unggah ZIP-nya, lalu aktifkan <strong>OGNIVID AI Assistant</strong>."),
                 T("Open <strong>Settings → OGNIVID AI Assistant</strong>. The plugin starts in <strong>test mode</strong> (admins only).", "Buka <strong>Settings → OGNIVID AI Assistant</strong>. Plugin dimulai dalam <strong>mode uji</strong> (hanya admin)."),
                 T("Paste an Anthropic API key (console.anthropic.com → API Keys), set the recipient email and save. Without a key the assistant works in form mode.", "Tempel API key Anthropic (console.anthropic.com → API Keys), atur email penerima, lalu simpan. Tanpa key, asisten berjalan dalam mode formulir."),
-                T("Make sure WordPress can send email (for example with WP Mail SMTP), test a brief, then turn test mode off.", "Pastikan WordPress bisa mengirim email (misalnya dengan WP Mail SMTP), uji satu brief, lalu matikan mode uji.")])
+                T("Make sure WordPress can send email (for example with WP Mail SMTP), test a brief, then turn test mode off.", "Pastikan WordPress bisa mengirim email (misalnya dengan WP Mail SMTP), uji satu brief, lalu matikan mode uji."),
+                T("Follow up from <strong>AI Briefs</strong>: new briefs are bold and counted in the menu badge; opening one marks it as read, and the Follow-up box tracks the status (New, Read, Contacted, Proposal sent, Won, Closed) and an internal note.", "Tindak lanjuti dari <strong>AI Briefs</strong>: brief baru ditampilkan tebal dan dihitung di badge menu; membukanya menandainya sebagai sudah dibaca, dan kotak Follow-up mencatat status (New, Read, Contacted, Proposal sent, Won, Closed) serta catatan internal.")])
             + f'<p class="note">{s(T("Requirements: WordPress 6.x, PHP 7.4+ (tested on PHP 8.2), outbound HTTPS from the server, and working email delivery.", "Kebutuhan: WordPress 6.x, PHP 7.4+ (diuji di PHP 8.2), koneksi HTTPS keluar dari server, dan pengiriman email yang berfungsi."))}</p>'),
 
         section("settings", T("Settings reference", "Referensi pengaturan"),
@@ -335,7 +336,7 @@ def page():
   <div class="eyebrow">{s(T("WordPress plugin · Documentation", "Plugin WordPress · Dokumentasi"))}</div>
   <h1>OGNIVID AI Assistant</h1>
   <p>{s(T("AI intake assistant that interviews website visitors and delivers a structured Project Brief by email and PDF", "Asisten AI yang mewawancarai pengunjung website dan mengirim Project Brief terstruktur lewat email dan PDF"))}</p>
-  <div class="meta">{s(T("Version 1.0 · November 2026 · For site owners, developers and integration engineers", "Versi 1.0 · November 2026 · Untuk pemilik situs, developer, dan integration engineer"))}</div>
+  <div class="meta">{s(T("Version 1.1 · November 2026 · For site owners, developers and integration engineers", "Versi 1.1 · November 2026 · Untuk pemilik situs, developer, dan integration engineer"))}</div>
 </div></header>
 <nav class="toc" aria-label="Contents"><div class="wrap">{toc}<span class="spacer"></span>
   <a class="tgl" href="{other_href}" hreflang="{other}">{"Bahasa Indonesia" if LANG == "en" else "English"}</a>

@@ -10,7 +10,8 @@ WordPress plugin: an AI intake assistant that interviews website visitors about 
 
 - **Consultative AI interview**: short, focused questions, then a summary the visitor confirms before anything is sent.
 - **Structured brief** (16 fields) produced through a strict tool schema and re-validated on the server.
-- **Delivery**: HTML email with PDF to the owner (with transcript), a copy to the customer (with a WhatsApp link), and a private archive in wp-admin → *AI Briefs*.
+- **Delivery**: HTML email with PDF to the owner (with transcript) and a copy to the customer (with a WhatsApp link).
+- **Admin inbox** (wp-admin → *AI Briefs*): customer, urgency, source and status columns, unread badge, status filter, transcript, PDF download, internal notes, one-click reply by email or WhatsApp.
 - **Bilingual** (English / Indonesian), following the page language.
 - **Provider-agnostic**: Anthropic Claude by default (`claude-opus-5-5`), or Gemini, Groq, OpenRouter, or any OpenAI-compatible endpoint.
 - **Never loses a lead**: automatic form fallback when AI is off, out of credit, failing or over the daily limit.
@@ -62,7 +63,8 @@ Plugin WordPress berisi asisten AI yang mewawancarai pengunjung website tentang 
 
 - **Wawancara AI yang konsultatif**: pertanyaan singkat dan terarah, lalu ringkasan yang dikonfirmasi pengunjung sebelum dikirim.
 - **Brief terstruktur** (16 kolom) lewat skema tool yang ketat dan divalidasi ulang di server.
-- **Pengiriman**: email HTML + PDF ke pemilik (beserta transkrip), salinan ke pelanggan (beserta link WhatsApp), dan arsip privat di wp-admin → *AI Briefs*.
+- **Pengiriman**: email HTML + PDF ke pemilik (beserta transkrip) dan salinan ke pelanggan (beserta link WhatsApp).
+- **Inbox di wp-admin** (*AI Briefs*): kolom pelanggan, urgensi, sumber, dan status, badge pesan baru, filter status, transkrip, unduhan PDF, catatan internal, serta balas sekali klik lewat email atau WhatsApp.
 - **Dua bahasa** (Inggris / Indonesia), mengikuti bahasa halaman.
 - **Tidak terkunci ke satu penyedia**: Claude secara bawaan, atau Gemini, Groq, OpenRouter, maupun endpoint OpenAI-compatible lain.
 - **Tidak kehilangan calon klien**: otomatis beralih ke formulir saat AI mati, saldo habis, error, atau batas harian tercapai.
