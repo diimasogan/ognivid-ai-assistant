@@ -29,6 +29,7 @@ header.site{background:var(--dark);color:#fff}
 .hero .pill{display:inline-block;border:1px solid #3c3c3c;border-radius:999px;padding:3px 12px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#cfd3cf}
 .hero h1{font:800 clamp(34px,6vw,64px)/1.05 Helvetica,Arial,sans-serif;margin:16px 0 12px}
 .hero p{color:#c9cdd3;max-width:640px;font-size:18px;margin:0}
+.try.dl{background:transparent;color:#fff;border:1px solid #4a4a4a;text-decoration:none;margin-left:8px}
 .try{margin-top:22px;display:inline-flex;gap:10px;align-items:center;background:var(--lime);color:#111;font-weight:700;padding:12px 18px;border-radius:999px;border:0;cursor:pointer;font-size:15px}
 main section{padding:44px 0 8px}
 h2{font:700 28px/1.2 Cambria,Georgia,serif;margin:0 0 8px}
@@ -76,6 +77,7 @@ footer{padding:40px 0 70px;color:var(--muted);font-size:14px}
     <h1 data-t="h1"></h1>
     <p data-t="sub"></p>
     <button class="try" id="try" type="button" data-t="try"></button>
+    <a class="try dl" href="https://github.com/diimasogan/ognivid-ai-assistant/releases/latest/download/ognivid-ai-assistant.zip" download data-t="zip"></a>
   </div>
 </div></header>
 
@@ -104,10 +106,10 @@ footer{padding:40px 0 70px;color:var(--muted);font-size:14px}
   var L = window.DEMO_LANG;
   var TXT = {
     en: {
-      bar: 'Live mockup · the AI is simulated in your browser and nothing is sent. <a href="https://github.com/diimasogan/ognivid-ai-assistant">Get the plugin</a> · <a href="../docs/OGNIVID-AI-Assistant-Documentation.html">Docs</a>',
+      bar: 'Live mockup · the AI is simulated in your browser and nothing is sent. <a href="https://github.com/diimasogan/ognivid-ai-assistant/releases/latest/download/ognivid-ai-assistant.zip">Download the plugin (ZIP)</a> · <a href="https://github.com/diimasogan/ognivid-ai-assistant">GitHub</a> · <a href="../docs/OGNIVID-AI-Assistant-Documentation.html">Docs</a>',
       navHow: 'How it works', navTeam: 'What the team receives', pill: 'WordPress plugin demo',
       h1: 'Talk to the AI, get a project brief', sub: 'This is a mockup of ognivid.com with the OGNIVID AI Assistant. Describe a project in the chat (bottom left) and watch it turn into the brief our team receives.',
-      try: 'Try the assistant →', howH: 'How it works', howP: 'The real plugin runs on Claude (or another AI provider) inside WordPress. In this mockup the interview is scripted so it works offline.',
+      try: 'Try the assistant →', zip: '⬇ Download plugin (ZIP)', howH: 'How it works', howP: 'The real plugin runs on Claude (or another AI provider) inside WordPress. In this mockup the interview is scripted so it works offline.',
       steps: [['1. Describe the need', 'The visitor explains the project in their own words.'], ['2. Short interview', 'The assistant asks about systems, urgency, timeline, budget and contact details.'], ['3. Confirm the summary', 'Nothing is sent until the visitor confirms.'], ['4. Brief delivered', 'Email + PDF to the team, a copy to the customer, and a new row in wp-admin.']],
       teamH: 'What the team receives', teamSample: 'Below is a sample brief. Finish a chat and it is replaced with yours.', teamYours: 'This is the brief generated from your chat.',
       tabMail: 'Email to OGNIVID', tabAdmin: 'wp-admin → AI Briefs', foot: 'OGNIVID AI Assistant · GPL-2.0-or-later · <a href="https://github.com/diimasogan/ognivid-ai-assistant">GitHub</a> · <a href="https://ognivid.com/">ognivid.com</a>',
@@ -116,10 +118,10 @@ footer{padding:40px 0 70px;color:var(--muted);font-size:14px}
       mail: { from: 'From', to: 'To', subj: 'Subject' }
     },
     id: {
-      bar: 'Live mockup · AI disimulasikan di browser Anda dan tidak ada data yang dikirim. <a href="https://github.com/diimasogan/ognivid-ai-assistant">Dapatkan plugin</a> · <a href="../docs/id/OGNIVID-AI-Assistant-Dokumentasi.html">Dokumentasi</a>',
+      bar: 'Live mockup · AI disimulasikan di browser Anda dan tidak ada data yang dikirim. <a href="https://github.com/diimasogan/ognivid-ai-assistant/releases/latest/download/ognivid-ai-assistant.zip">Unduh plugin (ZIP)</a> · <a href="https://github.com/diimasogan/ognivid-ai-assistant">GitHub</a> · <a href="../docs/id/OGNIVID-AI-Assistant-Dokumentasi.html">Dokumentasi</a>',
       navHow: 'Cara kerja', navTeam: 'Yang diterima tim', pill: 'Demo plugin WordPress',
       h1: 'Ngobrol dengan AI, dapatkan project brief', sub: 'Ini mockup ognivid.com dengan OGNIVID AI Assistant. Ceritakan sebuah proyek di chat (kiri bawah) dan lihat bagaimana ceritanya berubah menjadi brief yang diterima tim kami.',
-      try: 'Coba asistennya →', howH: 'Cara kerja', howP: 'Plugin aslinya berjalan dengan Claude (atau penyedia AI lain) di WordPress. Di mockup ini wawancaranya sudah diskenariokan agar bisa berjalan tanpa server.',
+      try: 'Coba asistennya →', zip: '⬇ Unduh plugin (ZIP)', howH: 'Cara kerja', howP: 'Plugin aslinya berjalan dengan Claude (atau penyedia AI lain) di WordPress. Di mockup ini wawancaranya sudah diskenariokan agar bisa berjalan tanpa server.',
       steps: [['1. Ceritakan kebutuhan', 'Pengunjung menjelaskan proyeknya dengan kata-kata sendiri.'], ['2. Wawancara singkat', 'Asisten menanyakan sistem, urgensi, target waktu, anggaran, dan kontak.'], ['3. Konfirmasi ringkasan', 'Tidak ada yang dikirim sebelum pengunjung mengonfirmasi.'], ['4. Brief terkirim', 'Email + PDF ke tim, salinan ke pelanggan, dan baris baru di wp-admin.']],
       teamH: 'Yang diterima tim', teamSample: 'Di bawah ini contoh brief. Selesaikan sebuah chat dan contoh ini akan diganti dengan brief Anda.', teamYours: 'Ini brief yang dibuat dari chat Anda.',
       tabMail: 'Email ke OGNIVID', tabAdmin: 'wp-admin → AI Briefs', foot: 'OGNIVID AI Assistant · GPL-2.0-or-later · <a href="https://github.com/diimasogan/ognivid-ai-assistant">GitHub</a> · <a href="https://ognivid.com/">ognivid.com</a>',

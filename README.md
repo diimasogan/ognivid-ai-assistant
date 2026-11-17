@@ -4,7 +4,7 @@ WordPress plugin: an AI intake assistant that interviews website visitors about 
 
 📖 **Documentation:** [English](https://diimasogan.github.io/ognivid-ai-assistant/docs/OGNIVID-AI-Assistant-Documentation.html) · [Bahasa Indonesia](https://diimasogan.github.io/ognivid-ai-assistant/docs/id/OGNIVID-AI-Assistant-Dokumentasi.html)
 ▶️ **Live mockup:** [try the assistant in your browser](https://diimasogan.github.io/ognivid-ai-assistant/demo/) (simulated AI, nothing is sent)
-⬇️ **Download:** [latest release (`ognivid-ai-assistant.zip`)](https://github.com/diimasogan/ognivid-ai-assistant/releases/latest)
+⬇️ **Download:** [`ognivid-ai-assistant.zip`](https://github.com/diimasogan/ognivid-ai-assistant/releases/latest/download/ognivid-ai-assistant.zip) (latest release)
 
 ![Chat widget](docs/assets/widget-chat-en.png)
 

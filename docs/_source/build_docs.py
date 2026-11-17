@@ -356,7 +356,7 @@ def page():
   <h1>OGNIVID AI Assistant</h1>
   <p>{s(T("AI intake assistant that interviews website visitors and delivers a structured Project Brief by email and PDF", "Asisten AI yang mewawancarai pengunjung website dan mengirim Project Brief terstruktur lewat email dan PDF"))}</p>
   <div class="meta">{s(T("Version 1.2 · November 2026 · For site owners, developers and integration engineers", "Versi 1.2 · November 2026 · Untuk pemilik situs, developer, dan integration engineer"))}</div>
-  <p style="margin-top:18px"><a class="btn" href="{"" if LANG == "en" else "../"}../demo/{"" if LANG == "en" else "?lang=id"}">{s(T("Open the live mockup", "Buka live mockup"))} →</a></p>
+  <p style="margin-top:18px"><a class="btn" href="{"" if LANG == "en" else "../"}../demo/{"" if LANG == "en" else "?lang=id"}">{s(T("Open the live mockup", "Buka live mockup"))} →</a> <a class="btn" style="background:transparent;border:1px solid #4a4a4a;color:#fff;margin-left:8px" href="https://github.com/diimasogan/ognivid-ai-assistant/releases/latest/download/ognivid-ai-assistant.zip" download>⬇ {s(T("Download ZIP", "Unduh ZIP"))}</a></p>
 </div></header>
 <nav class="toc" aria-label="Contents"><div class="wrap">{toc}<span class="spacer"></span>
   <a class="tgl" href="{other_href}" hreflang="{other}">{"Bahasa Indonesia" if LANG == "en" else "English"}</a>
