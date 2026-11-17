@@ -77,7 +77,7 @@ body.present section,body.present header.hero{min-height:100vh;display:flex;flex
 body.present section{border-top:1px solid var(--line)}
 @media (max-width:820px){.stats{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}.ba{grid-template-columns:1fr}h2{font-size:26px}}
 @media (min-width:821px){nav.toc .wrap{flex-wrap:wrap;overflow-x:visible;row-gap:4px}}
-@media print{nav.toc,.tgl{display:none}section{break-inside:avoid}body{background:#fff}}
+@media print{@page{size:A4;margin:12mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}nav.toc,.tgl,a.btn{display:none!important}body{background:#fff;font-size:13px}header.hero{padding:36px 0 30px}section{padding:22px 0 4px}h2{font-size:24px}.card,.tbl,figure,.stat,tr{break-inside:avoid}h2,h3{break-after:avoid}figure svg{min-width:0}table{min-width:0;font-size:12.5px}.grid.g3{grid-template-columns:repeat(3,1fr)}.grid.g2{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(4,1fr)}footer{margin-top:16px;padding:16px 0}}
 </style>
 </head>
 <body>
