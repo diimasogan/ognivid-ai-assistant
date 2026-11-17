@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OGNIVID AI Assistant · Live mockup</title>
+<meta name="description" content="Interactive mockup of the OGNIVID AI Assistant WordPress plugin: chat with a simulated assistant and see the project brief the team receives.">
+<script>
+  // Language from ?lang=id (default English). Set before the widget loads; it reads <html lang>.
+  (function () { var l = new URLSearchParams(location.search).get('lang') === 'id' ? 'id' : 'en'; document.documentElement.lang = l === 'id' ? 'id-ID' : 'en-US'; window.DEMO_LANG = l; })();
+</script>
+<link rel="stylesheet" href="../assets/widget.css">
+<style>
+:root{--bg:#F6F7F5;--surface:#fff;--surface2:#EEF1EC;--ink:#151A15;--muted:#5C665C;--line:#DDE3DA;--acc:#2E8A0E;--lime:#7CFF3B;--dark:#111;--amber:#E8913A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C0E0C;--surface:#151915;--surface2:#1C221C;--ink:#E7ECE5;--muted:#9AA59A;--line:#2A332A;--acc:#7CFF3B}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",Calibri,Arial,sans-serif}
+a{color:var(--acc)}
+.bar{background:#1d2a12;color:#d9f7c8;font-size:13px;text-align:center;padding:8px 16px}
+.bar a{color:var(--lime);font-weight:600}
+header.site{background:var(--dark);color:#fff}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.nav{display:flex;align-items:center;gap:18px;padding:16px 0;flex-wrap:wrap}
+.logo{font-weight:800;letter-spacing:.08em}
+.nav .sp{flex:1}
+.nav a{color:#cfd3cf;text-decoration:none;font-size:14px}
+.nav a.on{color:var(--lime)}
+.hero{padding:56px 0 64px}
+.hero .pill{display:inline-block;border:1px solid #3c3c3c;border-radius:999px;padding:3px 12px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#cfd3cf}
+.hero h1{font:800 clamp(34px,6vw,64px)/1.05 Helvetica,Arial,sans-serif;margin:16px 0 12px}
+.hero p{color:#c9cdd3;max-width:640px;font-size:18px;margin:0}
+.try{margin-top:22px;display:inline-flex;gap:10px;align-items:center;background:var(--lime);color:#111;font-weight:700;padding:12px 18px;border-radius:999px;border:0;cursor:pointer;font-size:15px}
+main section{padding:44px 0 8px}
+h2{font:700 28px/1.2 Cambria,Georgia,serif;margin:0 0 8px}
+.lead{color:var(--muted);max-width:820px;margin:0 0 18px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.step b{display:block;margin-bottom:4px}.step span{color:var(--muted);font-size:14px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:14px}
+.tab[aria-selected="true"]{background:var(--dark);color:#fff;border-color:var(--dark)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;overflow:auto}
+.panel[hidden]{display:none}
+.mail-head{font-size:13px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px}
+.mail-head b{color:var(--ink)}
+.att{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:13px;margin-top:8px;background:var(--surface2)}
+.wp{display:grid;grid-template-columns:180px 1fr;min-width:760px;border:1px solid #c3c4c7;border-radius:8px;overflow:hidden;font:13px/1.4 -apple-system,"Segoe UI",Arial,sans-serif;color:#1d2327;background:#f0f0f1}
+.wp-side{background:#1d2327;color:#f0f0f1;padding:10px 0}
+.wp-side div{padding:7px 14px;opacity:.85}
+.wp-side .cur{background:#2271b1;opacity:1;font-weight:600}
+.badge{display:inline-block;background:#d63638;color:#fff;border-radius:9px;font-size:9px;line-height:17px;min-width:17px;text-align:center;padding:0 5px;margin-left:6px}
+.wp-main{padding:16px 18px}
+.wp-main h3{font-size:20px;font-weight:400;margin:0 0 10px}
+.wp-filter{display:flex;gap:8px;margin-bottom:8px}.wp-filter span{border:1px solid #8c8f94;background:#fff;border-radius:3px;padding:3px 8px}
+table.wpt{width:100%;border-collapse:collapse;background:#fff;border:1px solid #c3c4c7}
+.wpt th{text-align:left;font-weight:400;padding:8px 10px;border-bottom:1px solid #c3c4c7}
+.wpt td{padding:9px 10px;border-top:1px solid #f0f0f1;vertical-align:top}
+.wpt tr.new td:first-child{box-shadow:inset 3px 0 0 #2e8a0e}.wpt tr.new .t{font-weight:800}
+.wpt .t{color:#2271b1;font-weight:600}
+.urg{display:inline-block;padding:2px 8px;border-radius:999px;color:#fff;font-size:11px}
+.st-new{font-weight:700;color:#2e8a0e}
+.flash{animation:fl 1.6s ease}@keyframes fl{0%{background:#eaf8df}100%{background:transparent}}
+footer{padding:40px 0 70px;color:var(--muted);font-size:14px}
+@media (max-width:820px){.steps{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.steps{grid-template-columns:1fr}.nav a.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<header class="site"><div class="wrap">
+  <div class="nav"><span class="logo">OGNIVID</span><span class="sp"></span>
+    <a class="hide-sm" href="#how" data-t="navHow"></a><a class="hide-sm" href="#team" data-t="navTeam"></a>
+    <a id="lang-en" href="?lang=en">EN</a><a id="lang-id" href="?lang=id">ID</a></div>
+  <div class="hero">
+    <span class="pill" data-t="pill"></span>
+    <h1 data-t="h1"></h1>
+    <p data-t="sub"></p>
+    <button class="try" id="try" type="button" data-t="try"></button>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <section id="how">
+    <h2 data-t="howH"></h2>
+    <p class="lead" data-t="howP"></p>
+    <div class="steps" id="steps"></div>
+  </section>
+  <section id="team">
+    <h2 data-t="teamH"></h2>
+    <p class="lead" id="teamP"></p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-p="mail" data-t="tabMail"></button>
+      <button class="tab" role="tab" aria-selected="false" data-p="admin" data-t="tabAdmin"></button>
+    </div>
+    <div class="panel" id="p-mail"></div>
+    <div class="panel" id="p-admin" hidden></div>
+  </section>
+</main>
+<footer class="wrap" id="foot"></footer>
+<div id="oaa-root"></div>
+
+<script>
+(function () {
+  var L = window.DEMO_LANG;
+  var TXT = {
+    en: {
+      bar: 'Live mockup · the AI is simulated in your browser and nothing is sent. <a href="https://github.com/diimasogan/ognivid-ai-assistant">Get the plugin</a> · <a href="../docs/OGNIVID-AI-Assistant-Documentation.html">Docs</a>',
+      navHow: 'How it works', navTeam: 'What the team receives', pill: 'WordPress plugin demo',
+      h1: 'Talk to the AI, get a project brief', sub: 'This is a mockup of ognivid.com with the OGNIVID AI Assistant. Describe a project in the chat (bottom left) and watch it turn into the brief our team receives.',
+      try: 'Try the assistant →', howH: 'How it works', howP: 'The real plugin runs on Claude (or another AI provider) inside WordPress. In this mockup the interview is scripted so it works offline.',
+      steps: [['1. Describe the need', 'The visitor explains the project in their own words.'], ['2. Short interview', 'The assistant asks about systems, urgency, timeline, budget and contact details.'], ['3. Confirm the summary', 'Nothing is sent until the visitor confirms.'], ['4. Brief delivered', 'Email + PDF to the team, a copy to the customer, and a new row in wp-admin.']],
+      teamH: 'What the team receives', teamSample: 'Below is a sample brief. Finish a chat and it is replaced with yours.', teamYours: 'This is the brief generated from your chat.',
+      tabMail: 'Email to OGNIVID', tabAdmin: 'wp-admin → AI Briefs', foot: 'OGNIVID AI Assistant · GPL-2.0-or-later · <a href="https://github.com/diimasogan/ognivid-ai-assistant">GitHub</a> · <a href="https://ognivid.com/">ognivid.com</a>',
+      q: { systems: 'Thanks, that helps. Which systems or tools are involved today (for example SAP, Axway SecureTransport, Boomi, Power BI)?', urgency: 'Got it. How urgent is this, and by when would you like it solved?', budget: 'Do you have a budget range in mind? It\'s fine to say "not sure yet".', contact: 'Great. What name and email should our team use to reply? A phone or WhatsApp number is optional.', noEmail: 'I couldn\'t find an email address. Could you share your name and email?', confirm: 'Shall I send this brief to the OGNIVID team? Reply **yes**, or tell me what to correct.', fixed: 'Thanks, I\'ve added that. Here is the updated summary:', done: 'Thank you, %n! Your project brief (ref. %r) has been sent to the OGNIVID team. We will contact you at %e, usually within 1-2 business days.' },
+      sum: { title: 'Summary', problem: 'Need', systems: 'Systems', urgency: 'Urgency', timeline: 'Timeline', budget: 'Budget', contact: 'Contact' },
+      mail: { from: 'From', to: 'To', subj: 'Subject' }
+    },
+    id: {
+      bar: 'Live mockup · AI disimulasikan di browser Anda dan tidak ada data yang dikirim. <a href="https://github.com/diimasogan/ognivid-ai-assistant">Dapatkan plugin</a> · <a href="../docs/id/OGNIVID-AI-Assistant-Dokumentasi.html">Dokumentasi</a>',
+      navHow: 'Cara kerja', navTeam: 'Yang diterima tim', pill: 'Demo plugin WordPress',
+      h1: 'Ngobrol dengan AI, dapatkan project brief', sub: 'Ini mockup ognivid.com dengan OGNIVID AI Assistant. Ceritakan sebuah proyek di chat (kiri bawah) dan lihat bagaimana ceritanya berubah menjadi brief yang diterima tim kami.',
+      try: 'Coba asistennya →', howH: 'Cara kerja', howP: 'Plugin aslinya berjalan dengan Claude (atau penyedia AI lain) di WordPress. Di mockup ini wawancaranya sudah diskenariokan agar bisa berjalan tanpa server.',
+      steps: [['1. Ceritakan kebutuhan', 'Pengunjung menjelaskan proyeknya dengan kata-kata sendiri.'], ['2. Wawancara singkat', 'Asisten menanyakan sistem, urgensi, target waktu, anggaran, dan kontak.'], ['3. Konfirmasi ringkasan', 'Tidak ada yang dikirim sebelum pengunjung mengonfirmasi.'], ['4. Brief terkirim', 'Email + PDF ke tim, salinan ke pelanggan, dan baris baru di wp-admin.']],
+      teamH: 'Yang diterima tim', teamSample: 'Di bawah ini contoh brief. Selesaikan sebuah chat dan contoh ini akan diganti dengan brief Anda.', teamYours: 'Ini brief yang dibuat dari chat Anda.',
+      tabMail: 'Email ke OGNIVID', tabAdmin: 'wp-admin → AI Briefs', foot: 'OGNIVID AI Assistant · GPL-2.0-or-later · <a href="https://github.com/diimasogan/ognivid-ai-assistant">GitHub</a> · <a href="https://ognivid.com/">ognivid.com</a>',
+      q: { systems: 'Terima kasih, itu membantu. Sistem atau tools apa saja yang terlibat saat ini (misalnya SAP, Axway SecureTransport, Boomi, Power BI)?', urgency: 'Baik. Seberapa mendesak, dan kapan target penyelesaiannya?', budget: 'Apakah sudah ada kisaran anggaran? Boleh juga jawab "belum tahu".', contact: 'Bagus. Nama dan email apa yang bisa dipakai tim kami untuk membalas? Nomor telepon atau WhatsApp opsional.', noEmail: 'Saya belum menemukan alamat email. Boleh kirim nama dan email Anda?', confirm: 'Boleh saya kirim brief ini ke tim OGNIVID? Balas **ya**, atau sampaikan bagian yang perlu dikoreksi.', fixed: 'Terima kasih, sudah saya tambahkan. Berikut ringkasan terbarunya:', done: 'Terima kasih, %n! Project brief Anda (ref. %r) sudah terkirim ke tim OGNIVID. Kami akan menghubungi Anda di %e, biasanya dalam 1-2 hari kerja.' },
+      sum: { title: 'Ringkasan', problem: 'Kebutuhan', systems: 'Sistem', urgency: 'Urgensi', timeline: 'Target waktu', budget: 'Anggaran', contact: 'Kontak' },
+      mail: { from: 'Dari', to: 'Kepada', subj: 'Subjek' }
+    }
+  }[L];
+
+  document.getElementById('bar').innerHTML = TXT.bar;
+  document.getElementById('foot').innerHTML = TXT.foot;
+  document.querySelectorAll('[data-t]').forEach(function (n) { n.textContent = TXT[n.getAttribute('data-t')]; });
+  document.getElementById('lang-' + L).className = 'on';
+  document.getElementById('steps').innerHTML = TXT.steps.map(function (s) { return '<div class="step"><b>' + s[0] + '</b><span>' + s[1] + '</span></div>'; }).join('');
+
+  /* ---------- sample + generated briefs ---------- */
+  var URG = { low: ['Low', 'Rendah', '#6b7280'], medium: ['Medium', 'Sedang', '#2563eb'], high: ['High', 'Tinggi', '#d97706'], critical: ['Critical', 'Kritis', '#dc2626'] };
+  var sample = {
+    ref: 'OGN-261118-1042', name: 'Rina Wijaya', email: 'rina@example.com', company: 'PT Contoh Logistik', source: 'AI chat', urgency: 'high', status: 'Read',
+    title: L === 'id' ? 'Otomatisasi transfer SFTP SAP ke bank' : 'Automate SAP-to-bank SFTP transfers',
+    problem: L === 'id' ? 'Transfer file pembayaran harian dari SAP ke bank sering gagal di malam hari dan baru ketahuan keesokan paginya.' : 'Daily payment files sent from SAP to the bank often fail overnight and nobody notices until the next morning.',
+    systems: 'SAP S/4HANA, Axway SecureTransport', timeline: L === 'id' ? 'Sebelum akhir kuartal' : 'Before quarter end', budget: L === 'id' ? 'Rp 50-100 juta' : 'USD 3,000-6,000',
+    services: 'Managed File Transfer, Integration & AI Agents'
+  };
+  var rows = [
+    { ref: 'OGN-261117-1039', title: L === 'id' ? 'Dashboard Power BI penjualan' : 'Power BI sales dashboard', name: 'Budi Santoso', company: 'Properti Nusantara', email: 'budi@example.com', urgency: 'medium', source: 'Form', status: 'Contacted', date: '2026/11/17' },
+    { ref: 'OGN-261116-1031', title: L === 'id' ? 'Integrasi HR ke payroll' : 'HR to payroll integration', name: 'Sari Lestari', company: 'Contoh Retail', email: 'sari@example.com', urgency: 'low', source: 'AI chat', status: 'Proposal sent', date: '2026/11/16' }
+  ];
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function urgLabel(u) { return URG[u][L === 'id' ? 1 : 0]; }
+
+  function renderMail(b) {
+    var row = function (k, v) { return '<tr><td style="padding:6px 10px;color:#6b7280;width:34%">' + k + '</td><td style="padding:6px 10px">' + v + '</td></tr>'; };
+    var S = TXT.sum;
+    document.getElementById('p-mail').innerHTML =
+      '<div class="mail-head"><b>' + TXT.mail.from + ':</b> OGNIVID AI Assistant &lt;noreply@ognivid.com&gt;<br><b>' + TXT.mail.to + ':</b> hello@ognivid.com<br><b>' + TXT.mail.subj + ':</b> ' + (b.urgency === 'high' || b.urgency === 'critical' ? '[' + b.urgency.toUpperCase() + '] ' : '') + '[OGNIVID Brief] ' + esc(b.title) + ' — ' + esc(b.name) + ' (' + b.ref + ')<br><span class="att">📎 ' + b.ref + '.pdf</span></div>' +
+      '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:#111827;max-width:680px">' +
+      '<div style="background:#111;color:#fff;padding:16px 20px;border-radius:10px 10px 0 0"><div style="font-size:12px;letter-spacing:2px;color:#7cff3b">OGNIVID</div><div style="font-size:19px;font-weight:bold;margin-top:4px">Project Brief: ' + esc(b.title) + '</div></div>' +
+      '<div style="border:1px solid #e5e7eb;border-top:0;padding:4px 20px 18px;border-radius:0 0 10px 10px;background:#fff"><table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px">' +
+      row(L === 'id' ? 'Referensi' : 'Reference', b.ref) + row(S.urgency, '<strong>' + urgLabel(b.urgency) + '</strong>') + row(S.timeline, esc(b.timeline)) + row(S.budget, esc(b.budget)) +
+      row(S.contact, esc(b.name) + (b.company ? ' · ' + esc(b.company) : '') + '<br><a href="mailto:' + esc(b.email) + '">' + esc(b.email) + '</a>') + '</table>' +
+      '<h3 style="margin:18px 0 6px;font-size:15px;border-bottom:1px solid #e5e7eb;padding-bottom:6px">' + S.problem + '</h3><p style="margin:0">' + esc(b.problem) + '</p>' +
+      '<h3 style="margin:18px 0 6px;font-size:15px;border-bottom:1px solid #e5e7eb;padding-bottom:6px">' + S.systems + '</h3><p style="margin:0">' + esc(b.systems) + '</p>' +
+      '<h3 style="margin:18px 0 6px;font-size:15px;border-bottom:1px solid #e5e7eb;padding-bottom:6px">' + (L === 'id' ? 'Layanan terkait' : 'Relevant services') + '</h3><p style="margin:0">' + esc(b.services) + '</p>' +
+      '</div></div>';
+  }
+  function renderAdmin(newRow) {
+    var all = (newRow ? [newRow] : []).concat([{ ref: sample.ref, title: sample.title, name: sample.name, company: sample.company, email: sample.email, urgency: sample.urgency, source: sample.source, status: sample.status, date: '2026/11/18' }], rows);
+    var n = newRow ? 1 : 0;
+    document.getElementById('p-admin').innerHTML =
+      '<div class="wp"><div class="wp-side"><div>Dashboard</div><div>Posts</div><div>Pages</div><div class="cur">AI Briefs' + (n ? '<span class="badge">' + n + '</span>' : '') + '</div><div>Settings</div></div>' +
+      '<div class="wp-main"><h3>AI Briefs</h3><div class="wp-filter"><span>All statuses ▾</span><span>Filter</span></div><table class="wpt"><thead><tr><th>Brief</th><th>Customer</th><th>Urgency</th><th>Source</th><th>Status</th><th>Received</th></tr></thead><tbody>' +
+      all.map(function (r, i) {
+        var isNew = newRow && i === 0;
+        return '<tr class="' + (isNew ? 'new flash' : '') + '"><td><span class="t">' + esc(r.title) + ' — ' + esc(r.name) + '</span></td><td><strong>' + esc(r.name) + '</strong>' + (r.company ? '<br>' + esc(r.company) : '') + '<br><a href="#" onclick="return false">' + esc(r.email) + '</a></td>' +
+          '<td><span class="urg" style="background:' + URG[r.urgency][2] + '">' + URG[r.urgency][0] + '</span></td><td>' + esc(r.source) + '</td><td><span class="' + (isNew ? 'st-new' : '') + '">' + (isNew ? 'New' : esc(r.status)) + '</span></td><td>' + r.date + '</td></tr>';
+      }).join('') + '</tbody></table></div></div>';
+  }
+  function showTeam(b, mine) {
+    document.getElementById('teamP').textContent = mine ? TXT.teamYours : TXT.teamSample;
+    renderMail(b);
+    renderAdmin(mine ? { ref: b.ref, title: b.title, name: b.name, company: b.company, email: b.email, urgency: b.urgency, source: b.source, status: 'New', date: '2026/11/18' } : null);
+  }
+  showTeam(sample, false);
+
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (x) { x.setAttribute('aria-selected', x === t ? 'true' : 'false'); });
+      document.getElementById('p-mail').hidden = t.getAttribute('data-p') !== 'mail';
+      document.getElementById('p-admin').hidden = t.getAttribute('data-p') !== 'admin';
+    });
+  });
+
+  /* ---------- simulated backend for the real widget ---------- */
+  var st = { step: 0, d: {} };
+  function urgencyOf(s) { s = s.toLowerCase(); if (/critical|kritis|darurat|down|mati total/.test(s)) return 'critical'; if (/urgent|asap|segera|mendesak|minggu ini|this week|tomorrow|besok/.test(s)) return 'high'; if (/no rush|santai|tidak mendesak|next year|tahun depan/.test(s)) return 'low'; return 'medium'; }
+  function summary() {
+    var d = st.d, S = TXT.sum;
+    return '**' + S.title + '**\n- ' + S.problem + ': ' + d.problem + '\n- ' + S.systems + ': ' + d.systems + '\n- ' + S.urgency + ': ' + urgLabel(d.urgency) + ' (' + d.timeline + ')\n- ' + S.budget + ': ' + d.budget + '\n- ' + S.contact + ': ' + d.name + ', ' + d.email + (d.phone ? ', ' + d.phone : '') + '\n\n' + TXT.q.confirm;
+  }
+  function titleOf(p) {
+    var STOP = /^(and|or|the|a|an|of|to|for|with|between|in|on|at|from|dan|atau|yang|di|ke|dari|untuk|dengan|antara|pada)$/i;
+    var w = String(p).split(/[.,;:!?\n]/)[0].replace(/[^\w\s\-À-ž/&]/g, ' ').split(/\s+/).filter(Boolean).slice(0, 8);
+    while (w.length > 3 && STOP.test(w[w.length - 1])) w.pop();
+    var t = w.join(' '); return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  function reply(msg) {
+    var d = st.d, q = TXT.q;
+    switch (st.step) {
+      case 0: d.problem = msg; st.step = 1; return { reply: q.systems };
+      case 1: d.systems = msg; st.step = 2; return { reply: q.urgency };
+      case 2: d.timeline = msg; d.urgency = urgencyOf(msg); st.step = 3; return { reply: q.budget };
+      case 3: d.budget = msg; st.step = 4; return { reply: q.contact };
+      case 4:
+        var em = msg.match(/[^\s@,;]+@[^\s@,;]+\.[a-z]{2,}/i);
+        if (!em) return { reply: q.noEmail };
+        d.email = em[0];
+        var ph = msg.match(/\+?\d[\d\s\-]{7,}\d/); d.phone = ph ? ph[0].trim() : '';
+        d.name = msg.replace(em[0], '').replace(d.phone, '').replace(/\b(my name is|nama saya|saya|i am|i'm|name|nama|email|and|dan)\b/gi, ' ').replace(/[,:;\-]+/g, ' ').replace(/\s+/g, ' ').trim() || (L === 'id' ? 'Pengunjung' : 'Visitor');
+        st.step = 5; return { reply: summary() };
+      case 5:
+        if (/^\s*(yes|y|ya|iya|ok|oke|okay|sure|send|kirim|betul|benar|correct|sip|boleh)\b/i.test(msg)) {
+          st.step = 6;
+          var ref = 'OGN-261118-' + (1043 + Math.floor(Math.random() * 50));
+          var b = { ref: ref, name: d.name, email: d.email, company: '', source: 'AI chat', urgency: d.urgency, title: titleOf(d.problem), problem: d.problem, systems: d.systems, timeline: d.timeline, budget: d.budget, services: /power ?bi|dashboard|dax|report/i.test(d.problem + d.systems) ? 'Data & Dashboards' : /sftp|mft|file|axway|transfer/i.test(d.problem + d.systems) ? 'Managed File Transfer' : 'Integration & AI Agents' };
+          setTimeout(function () { showTeam(b, true); }, 400);
+          return { reply: q.done.replace('%n', d.name).replace('%r', ref).replace('%e', d.email), done: true };
+        }
+        d.problem += ' ' + msg; return { reply: q.fixed + '\n\n' + summary() };
+      default: return { reply: q.done.replace('%n', d.name).replace('%r', '—').replace('%e', d.email), done: true };
+    }
+  }
+  var REST = 'https://demo.invalid/wp-json/ognivid-ai/v1';
+  var realFetch = window.fetch.bind(window);
+  window.fetch = function (url, opts) {
+    if (typeof url === 'string' && url.indexOf(REST) === 0) {
+      var body = {}; try { body = JSON.parse((opts && opts.body) || '{}'); } catch (e) {}
+      var out;
+      if (/\/chat$/.test(url)) { out = reply(String(body.message || '').trim()); out.sid = 'demo'; out.mode = 'chat'; }
+      else {
+        var ref = 'OGN-261118-' + (1043 + Math.floor(Math.random() * 50));
+        var fb = { ref: ref, name: body.name, email: body.email, company: body.company, source: 'Form', urgency: body.urgency || 'medium', title: body.title || titleOf(body.problem || ''), problem: body.problem, systems: body.systems || '-', timeline: body.timeline || '-', budget: body.budget || '-', services: body.service || '-' };
+        setTimeout(function () { showTeam(fb, true); }, 400);
+        out = { ok: true, reply: TXT.q.done.replace('%n', body.name || '').replace('%r', ref).replace('%e', body.email || '') };
+      }
+      return new Promise(function (res) { setTimeout(function () { res(new Response(JSON.stringify(out), { status: 200, headers: { 'Content-Type': 'application/json' } })); }, 650 + Math.random() * 600); });
+    }
+    return realFetch(url, opts);
+  };
+  try { ['oaa_sid', 'oaa_hist', 'oaa_done'].forEach(function (k) { sessionStorage.removeItem(k); }); } catch (e) {}
+  window.OAA_CFG = { rest: REST, position: 'left', aiOn: true, maxChars: 1500, wa: '6285280052326', test: false, nonce: '' };
+  document.getElementById('try').addEventListener('click', function () { var b = document.querySelector('.oaa-launch'); if (b && document.querySelector('.oaa-panel').hidden) b.click(); });
+})();
+</script>
+<script src="../assets/widget.js"></script>
+<script>
+  // "New chat" in the widget should also restart the scripted interview.
+  document.addEventListener('click', function (e) { if (e.target && e.target.classList && e.target.classList.contains('oaa-new')) { location.reload(); } });
+  setTimeout(function () { var b = document.querySelector('.oaa-launch'); if (b && window.innerWidth > 700) b.click(); }, 900);
+</script>
+</body>
+</html>

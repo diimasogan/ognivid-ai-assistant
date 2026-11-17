@@ -3,6 +3,7 @@
 WordPress plugin: an AI intake assistant that interviews website visitors about their project and delivers a structured **Project Brief** (HTML email + PDF) to the site owner. Built for [ognivid.com](https://ognivid.com/).
 
 📖 **Documentation:** [English](https://diimasogan.github.io/ognivid-ai-assistant/docs/OGNIVID-AI-Assistant-Documentation.html) · [Bahasa Indonesia](https://diimasogan.github.io/ognivid-ai-assistant/docs/id/OGNIVID-AI-Assistant-Dokumentasi.html)
+▶️ **Live mockup:** [try the assistant in your browser](https://diimasogan.github.io/ognivid-ai-assistant/demo/) (simulated AI, nothing is sent)
 ⬇️ **Download:** [latest release (`ognivid-ai-assistant.zip`)](https://github.com/diimasogan/ognivid-ai-assistant/releases/latest)
 
 ![Chat widget](docs/assets/widget-chat-en.png)
@@ -77,6 +78,7 @@ includes/class-oaa-chat.php       REST endpoints, sessions, limits, widget loadi
 includes/class-oaa-brief.php      AI Briefs post type and admin inbox, PDF, HTML email
 includes/fpdf/                    FPDF 1.9 (PDF generation, own licence)
 assets/widget.js, widget.css      Chat + form UI (no dependencies)
+demo/index.html                   Live mockup (real widget + simulated backend, runs on GitHub Pages)
 docs/                             Bilingual HTML documentation (built by docs/_source/build_docs.py)
 ```
 
@@ -121,7 +123,7 @@ Langganan ChatGPT Plus atau Claude Pro **tidak** termasuk akses API. Setiap peny
 - **Pengunjung:** klik **Konsultasi dengan AI** (kiri bawah), ceritakan proyeknya atau pilih **Lebih suka isi formulir?**, lalu konfirmasi ringkasan. Nomor referensi muncul di layar dan salinan brief dikirim ke email.
 - **Pemilik situs:** brief baru masuk ke email (dengan PDF) dan ke **wp-admin → AI Briefs** (ada angka di menu). Buka brief, unduh PDF, baca transkrip, balas lewat **Reply by email** / **Chat on WhatsApp**, lalu atur status dan catatan internal di kotak **Follow-up**.
 
-Panduan lengkap: [dokumentasi bahasa Indonesia](https://diimasogan.github.io/ognivid-ai-assistant/docs/id/OGNIVID-AI-Assistant-Dokumentasi.html).
+Coba langsung: [live mockup](https://diimasogan.github.io/ognivid-ai-assistant/demo/?lang=id) (AI disimulasikan, tidak ada data yang dikirim). Panduan lengkap: [dokumentasi bahasa Indonesia](https://diimasogan.github.io/ognivid-ai-assistant/docs/id/OGNIVID-AI-Assistant-Dokumentasi.html).
 
 ## License
 
