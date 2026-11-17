@@ -2,7 +2,7 @@
 /**
  * Plugin Name: OGNIVID AI Assistant
  * Description: AI intake assistant that interviews website visitors about their project, turns the conversation into a structured Project Brief (HTML email + PDF) and sends it to OGNIVID. Includes a no-AI form fallback.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: OGNIVID
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OAA_VERSION', '1.1.0' );
+define( 'OAA_VERSION', '1.2.0' );
 define( 'OAA_FILE', __FILE__ );
 define( 'OAA_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OAA_URL', plugin_dir_url( __FILE__ ) );

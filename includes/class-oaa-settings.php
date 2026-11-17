@@ -14,7 +14,7 @@ class OAA_Settings {
 		return array(
 			'enabled'          => 1,
 			'test_mode'        => 1,          // only logged-in admins see the widget
-			'provider'         => 'anthropic', // anthropic | gemini | groq | openrouter | custom | off
+			'provider'         => 'anthropic', // see OAA_Provider::providers()
 			'api_key'          => '',
 			'model'            => 'claude-opus-5-5',
 			'effort'           => 'medium',
@@ -46,15 +46,6 @@ class OAA_Settings {
 		OAA_Brief::ensure_storage();
 	}
 
-	public static function models() {
-		return array(
-			'anthropic'  => array( 'claude-opus-5-5' => 'Claude Opus 5.5 (best quality, default)', 'claude-sonnet-5-5' => 'Claude Sonnet 5.5 (balanced)', 'claude-haiku-5-5' => 'Claude Haiku 5.5 (lowest cost)' ),
-			'gemini'     => array( 'gemini-2.5-flash' => 'Gemini 2.5 Flash' ),
-			'groq'       => array( 'llama-3.3-70b-versatile' => 'Llama 3.3 70B' ),
-			'openrouter' => array( 'meta-llama/llama-3.3-70b-instruct:free' => 'Llama 3.3 70B (free tier)' ),
-		);
-	}
-
 	public static function admin_menu() {
 		add_options_page( 'OGNIVID AI Assistant', 'OGNIVID AI Assistant', 'manage_options', 'oaa-settings', array( __CLASS__, 'page' ) );
 	}
@@ -79,7 +70,7 @@ class OAA_Settings {
 		$out['test_mode']        = empty( $in['test_mode'] ) ? 0 : 1;
 		$out['copy_to_customer'] = empty( $in['copy_to_customer'] ) ? 0 : 1;
 		$prov                    = isset( $in['provider'] ) ? sanitize_key( $in['provider'] ) : $d['provider'];
-		$out['provider']         = in_array( $prov, array( 'anthropic', 'gemini', 'groq', 'openrouter', 'custom', 'off' ), true ) ? $prov : $d['provider'];
+		$out['provider']         = array_key_exists( $prov, OAA_Provider::providers() ) ? $prov : $d['provider'];
 		// Keep the stored key when the field is left blank (it is never echoed back to the page).
 		$key                     = isset( $in['api_key'] ) ? trim( wp_unslash( $in['api_key'] ) ) : '';
 		$out['api_key']          = '' === $key ? $old['api_key'] : sanitize_text_field( $key );
@@ -106,7 +97,6 @@ class OAA_Settings {
 		}
 		$o      = self::get();
 		$n      = self::OPTION;
-		$models = self::models();
 		$today  = (int) get_transient( 'oaa_daily_' . wp_date( 'Ymd' ) );
 		?>
 		<div class="wrap">
@@ -122,8 +112,8 @@ class OAA_Settings {
 					</td></tr>
 					<tr><th>AI provider</th><td>
 						<select name="<?php echo esc_attr( $n ); ?>[provider]">
-							<?php foreach ( array( 'anthropic' => 'Anthropic Claude (recommended)', 'gemini' => 'Google Gemini (OpenAI-compatible)', 'groq' => 'Groq', 'openrouter' => 'OpenRouter', 'custom' => 'Custom OpenAI-compatible endpoint', 'off' => 'Off: form only (no AI, free)' ) as $k => $l ) : ?>
-								<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $o['provider'], $k ); ?>><?php echo esc_html( $l ); ?></option>
+							<?php foreach ( OAA_Provider::providers() as $k => $pv ) : ?>
+								<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $o['provider'], $k ); ?>><?php echo esc_html( $pv['label'] ); ?></option>
 							<?php endforeach; ?>
 						</select>
 						<p class="description">If the provider fails, runs out of credit or hits the daily limit, visitors automatically get the brief form instead.</p>
@@ -131,12 +121,12 @@ class OAA_Settings {
 					<tr><th>API key</th><td>
 						<input type="password" autocomplete="new-password" class="regular-text" name="<?php echo esc_attr( $n ); ?>[api_key]" value="" placeholder="<?php echo $o['api_key'] ? esc_attr( 'Saved (…' . substr( $o['api_key'], -4 ) . '). Leave blank to keep.' ) : 'Paste your API key'; ?>">
 						<?php if ( $o['api_key'] ) : ?><label><input type="checkbox" name="<?php echo esc_attr( $n ); ?>[clear_key]" value="1"> Remove saved key</label><?php endif; ?>
-						<p class="description">Anthropic: create a key at console.anthropic.com → API Keys. The key is stored on your server only.</p>
+						<p class="description">Where to get a key: <?php $kk = array(); foreach ( OAA_Provider::providers() as $pv ) { if ( $pv['keys'] && 'your provider' !== $pv['keys'] ) { $kk[] = esc_html( $pv['keys'] ); } } echo implode( ' · ', $kk ); // phpcs:ignore ?>. The key is stored on your server only.</p>
 					</td></tr>
 					<tr><th>Model</th><td>
 						<input type="text" class="regular-text" list="oaa-models" name="<?php echo esc_attr( $n ); ?>[model]" value="<?php echo esc_attr( $o['model'] ); ?>">
-						<datalist id="oaa-models"><?php foreach ( $models as $p => $list ) { foreach ( $list as $id => $label ) { echo '<option value="' . esc_attr( $id ) . '">' . esc_html( $p . ': ' . $label ) . '</option>'; } } ?></datalist>
-						<p class="description">Anthropic: claude-opus-5-5 (best), claude-sonnet-5-5, claude-haiku-5-5 (cheapest).</p>
+						<datalist id="oaa-models"><?php foreach ( OAA_Provider::providers()['anthropic']['models'] as $mid ) { echo '<option value="' . esc_attr( $mid ) . '">'; } ?></datalist>
+						<p class="description">Anthropic: claude-opus-5-5 (best), claude-sonnet-5-5, claude-haiku-5-5 (cheapest). Other providers: type a model ID from that provider’s model list (for example an OpenAI GPT model for ChatGPT).</p>
 					</td></tr>
 					<tr><th>Effort (Claude)</th><td>
 						<select name="<?php echo esc_attr( $n ); ?>[effort]"><?php foreach ( array( 'low', 'medium', 'high' ) as $e ) : ?><option value="<?php echo esc_attr( $e ); ?>" <?php selected( $o['effort'], $e ); ?>><?php echo esc_html( ucfirst( $e ) ); ?></option><?php endforeach; ?></select>

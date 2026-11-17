@@ -19,6 +19,25 @@ class OAA_Provider {
 	/** Models that accept server-side refusal fallbacks (`fallbacks: "default"`). */
 	const FALLBACK_MODELS = array( 'claude-opus-5-5', 'claude-sonnet-5-5', 'claude-opus-5', 'claude-fable-5-2', 'claude-fable-5-1' );
 
+	/**
+	 * Supported providers. 'url' is the chat endpoint for OpenAI-compatible providers.
+	 * Model IDs are suggestions only; any model ID the provider offers can be typed in the settings.
+	 */
+	public static function providers() {
+		return array(
+			'anthropic'  => array( 'label' => 'Anthropic Claude (recommended)', 'url' => self::ANTHROPIC_URL, 'models' => array( 'claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5' ), 'keys' => 'console.anthropic.com → API Keys' ),
+			'openai'     => array( 'label' => 'OpenAI (ChatGPT models)', 'url' => 'https://api.openai.com/v1/chat/completions', 'models' => array(), 'keys' => 'platform.openai.com → API keys' ),
+			'gemini'     => array( 'label' => 'Google Gemini', 'url' => 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', 'models' => array(), 'keys' => 'aistudio.google.com → Get API key' ),
+			'mistral'    => array( 'label' => 'Mistral AI', 'url' => 'https://api.mistral.ai/v1/chat/completions', 'models' => array(), 'keys' => 'console.mistral.ai → API keys' ),
+			'deepseek'   => array( 'label' => 'DeepSeek', 'url' => 'https://api.deepseek.com/chat/completions', 'models' => array(), 'keys' => 'platform.deepseek.com → API keys' ),
+			'xai'        => array( 'label' => 'xAI (Grok)', 'url' => 'https://api.x.ai/v1/chat/completions', 'models' => array(), 'keys' => 'console.x.ai → API keys' ),
+			'groq'       => array( 'label' => 'Groq', 'url' => 'https://api.groq.com/openai/v1/chat/completions', 'models' => array(), 'keys' => 'console.groq.com → API Keys' ),
+			'openrouter' => array( 'label' => 'OpenRouter (hundreds of models)', 'url' => 'https://openrouter.ai/api/v1/chat/completions', 'models' => array(), 'keys' => 'openrouter.ai → Keys' ),
+			'custom'     => array( 'label' => 'Custom OpenAI-compatible endpoint', 'url' => '', 'models' => array(), 'keys' => 'your provider' ),
+			'off'        => array( 'label' => 'Off: form only (no AI, free)', 'url' => '', 'models' => array(), 'keys' => '' ),
+		);
+	}
+
 	public static function tool_schema() {
 		$str  = array( 'type' => 'string' );
 		$list = array( 'type' => 'array', 'items' => array( 'type' => 'string' ) );
@@ -187,13 +206,8 @@ TXT;
 	}
 
 	private static function openai_compat( $messages, $lang, $o ) {
-		$urls = array(
-			'gemini'     => 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-			'groq'       => 'https://api.groq.com/openai/v1/chat/completions',
-			'openrouter' => 'https://openrouter.ai/api/v1/chat/completions',
-			'custom'     => $o['custom_base_url'],
-		);
-		$url = isset( $urls[ $o['provider'] ] ) ? $urls[ $o['provider'] ] : '';
+		$all = self::providers();
+		$url = 'custom' === $o['provider'] ? $o['custom_base_url'] : ( isset( $all[ $o['provider'] ]['url'] ) ? $all[ $o['provider'] ]['url'] : '' );
 		if ( '' === $url ) {
 			return self::fail( 'no_endpoint' );
 		}
@@ -213,11 +227,19 @@ TXT;
 			),
 			'tool_choice' => 'auto',
 		);
+		if ( 'openai' === $o['provider'] ) {
+			// Current OpenAI models expect max_completion_tokens instead of max_tokens.
+			$body['max_completion_tokens'] = $body['max_tokens'];
+			unset( $body['max_tokens'] );
+		}
+		if ( 'openrouter' === $o['provider'] ) {
+			$headers_extra = array( 'HTTP-Referer' => home_url( '/' ), 'X-Title' => get_bloginfo( 'name' ) );
+		}
 		$res = wp_remote_post(
 			$url,
 			array(
 				'timeout' => 90,
-				'headers' => array( 'Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $o['api_key'] ),
+				'headers' => array_merge( array( 'Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $o['api_key'] ), isset( $headers_extra ) ? $headers_extra : array() ),
 				'body'    => wp_json_encode( $body ),
 			)
 		);
