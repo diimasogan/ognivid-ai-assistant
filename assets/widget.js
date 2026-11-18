@@ -1,16 +1,17 @@
-/* OGNIVID AI Assistant widget */
+/* OGNIVID AI Assistant widget (no dependencies) */
 (function () {
   'use strict';
-  var CFG = window.OAA_CFG || {};
+  var CFG = window.ognividAiCfg || {};
   var root = document.getElementById('oaa-root');
   if (!root || !CFG.rest) return;
 
+  var BRAND = CFG.brand || 'our';
   var LANG = (document.documentElement.lang || '').toLowerCase().indexOf('id') === 0 ? 'id' : 'en';
   var T = {
     en: {
-      launch: 'Talk to our AI', title: 'OGNIVID Assistant', sub: 'Describe your project, we prepare the brief',
-      hello: 'Hi! 👋 I\'m the OGNIVID assistant. Tell me what you need help with (for example file transfer, system integration, AI agents or a Power BI dashboard) and I\'ll turn it into a project brief for our team.',
-      privacy: 'This chat is processed by AI and sent to the OGNIVID team. Please don\'t share passwords or confidential data.',
+      launch: 'Talk to our AI', title: BRAND + ' Assistant', sub: 'Describe your project, we prepare the brief',
+      hello: CFG.helloEn || ('Hi! 👋 I\'m the ' + BRAND + ' assistant. Tell me what you need help with and I\'ll turn it into a project brief for our team.'),
+      privacy: 'This chat is processed by AI and sent to the ' + BRAND + ' team. Please don\'t share passwords or confidential data.',
       ph: 'Type your message…', send: 'Send', thinking: 'Typing…', toForm: 'Prefer a short form?', toChat: 'Back to chat',
       newChat: 'New chat', err: 'Connection problem. Please try again.', test: 'Test mode: only admins see this',
       f: { name: 'Name *', email: 'Email *', company: 'Company', phone: 'Phone / WhatsApp', title: 'Project title', problem: 'What do you need help with? *', systems: 'Current systems / tools', service: 'Service', urgency: 'Urgency', timeline: 'Desired timeline', budget: 'Budget range', submit: 'Send brief', sending: 'Sending…',
@@ -18,9 +19,9 @@
       wa: 'Chat on WhatsApp'
     },
     id: {
-      launch: 'Konsultasi dengan AI', title: 'Asisten OGNIVID', sub: 'Ceritakan proyek Anda, kami siapkan brief-nya',
-      hello: 'Halo! 👋 Saya asisten OGNIVID. Ceritakan apa yang perlu dibantu (misalnya file transfer, integrasi sistem, AI agent, atau dashboard Power BI), dan saya akan menyusunnya menjadi project brief untuk tim kami.',
-      privacy: 'Chat ini diproses oleh AI dan dikirim ke tim OGNIVID. Mohon jangan membagikan password atau data rahasia.',
+      launch: 'Konsultasi dengan AI', title: 'Asisten ' + BRAND, sub: 'Ceritakan proyek Anda, kami siapkan brief-nya',
+      hello: CFG.helloId || ('Halo! 👋 Saya asisten ' + BRAND + '. Ceritakan apa yang perlu dibantu, dan saya akan menyusunnya menjadi project brief untuk tim kami.'),
+      privacy: 'Chat ini diproses oleh AI dan dikirim ke tim ' + BRAND + '. Mohon jangan membagikan password atau data rahasia.',
       ph: 'Ketik pesan Anda…', send: 'Kirim', thinking: 'Mengetik…', toForm: 'Lebih suka isi formulir?', toChat: 'Kembali ke chat',
       newChat: 'Chat baru', err: 'Koneksi bermasalah. Silakan coba lagi.', test: 'Mode uji: hanya admin yang melihat ini',
       f: { name: 'Nama *', email: 'Email *', company: 'Perusahaan', phone: 'Telepon / WhatsApp', title: 'Judul proyek', problem: 'Apa yang perlu kami bantu? *', systems: 'Sistem / tools yang dipakai', service: 'Layanan', urgency: 'Urgensi', timeline: 'Target waktu', budget: 'Kisaran anggaran', submit: 'Kirim brief', sending: 'Mengirim…',
@@ -55,6 +56,11 @@
   }
 
   root.className = 'oaa oaa-' + (CFG.position === 'right' ? 'right' : 'left');
+  if (/^#[0-9a-f]{6}$/i.test(CFG.accent || '')) {
+    var hx = CFG.accent.slice(1), r = parseInt(hx.substr(0, 2), 16), g = parseInt(hx.substr(2, 2), 16), bl = parseInt(hx.substr(4, 2), 16);
+    root.style.setProperty('--oaa-accent', CFG.accent);
+    root.style.setProperty('--oaa-on-accent', (0.299 * r + 0.587 * g + 0.114 * bl) > 150 ? '#111' : '#fff');
+  }
   var btn = el('button', 'oaa-launch');
   btn.type = 'button';
   btn.setAttribute('aria-label', T.launch);
@@ -87,12 +93,12 @@
   root.appendChild(panel);
   root.appendChild(btn);
 
-  var sid = store.get('oaa_sid') || '';
+  var sid = store.get('ognivid_ai_sid') || '';
   var history = [];
-  try { history = JSON.parse(store.get('oaa_hist') || '[]'); } catch (e) { history = []; }
-  var busy = false, mode = 'chat', done = store.get('oaa_done') === '1';
+  try { history = JSON.parse(store.get('ognivid_ai_hist') || '[]'); } catch (e) { history = []; }
+  var busy = false, mode = 'chat', done = store.get('ognivid_ai_done') === '1';
 
-  function save() { store.set('oaa_hist', JSON.stringify(history.slice(-60))); }
+  function save() { store.set('ognivid_ai_hist', JSON.stringify(history.slice(-60))); }
   function bubble(role, text, push) {
     var b = el('div', 'oaa-msg oaa-' + role);
     if (role === 'bot') b.innerHTML = fmt(text); else b.textContent = text;
@@ -136,9 +142,9 @@
       .then(function (r) { return r.json(); })
       .then(function (d) {
         setBusy(false);
-        if (d.sid) { sid = d.sid; store.set('oaa_sid', sid); }
+        if (d.sid) { sid = d.sid; store.set('ognivid_ai_sid', sid); }
         if (d.reply) bubble('bot', d.reply, true);
-        if (d.done) { done = true; store.set('oaa_done', '1'); ta.disabled = true; addWaLink(); }
+        if (d.done) { done = true; store.set('ognivid_ai_done', '1'); ta.disabled = true; addWaLink(); }
         if (d.mode === 'form') showForm();
         if (!d.reply && !d.done) bubble('bot', T.err, false);
       })
@@ -182,7 +188,7 @@
       fetch(CFG.rest + '/form', { method: 'POST', credentials: 'same-origin', headers: headers(), body: JSON.stringify(data) })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-          if (d.ok) { formBox.remove(); formBox = null; done = true; store.set('oaa_done', '1'); bubble('bot', d.reply, true); addWaLink(); sw.hidden = true; }
+          if (d.ok) { formBox.remove(); formBox = null; done = true; store.set('ognivid_ai_done', '1'); bubble('bot', d.reply, true); addWaLink(); sw.hidden = true; }
           else { b.disabled = false; b.textContent = F.submit; msg.textContent = d.reply || T.err; }
         })
         .catch(function () { b.disabled = false; b.textContent = F.submit; msg.textContent = T.err; });
@@ -192,7 +198,7 @@
   sw.addEventListener('click', function () { if (mode === 'chat') showForm(); else showChat(); });
 
   panel.querySelector('.oaa-new').addEventListener('click', function () {
-    sid = ''; history = []; done = false; store.del('oaa_sid'); store.del('oaa_hist'); store.del('oaa_done');
+    sid = ''; history = []; done = false; store.del('ognivid_ai_sid'); store.del('ognivid_ai_hist'); store.del('ognivid_ai_done');
     if (formBox) { formBox.remove(); formBox = null; }
     showChat(); render(); ta.disabled = false;
   });

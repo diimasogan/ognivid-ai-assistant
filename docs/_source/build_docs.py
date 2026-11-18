@@ -92,7 +92,7 @@ def architecture_svg():
 <g class="bx"><rect x="250" y="280" width="200" height="80" rx="10"/><text x="350" y="306">{L('Server-side session','Sesi di server')}</text><text x="350" y="326" class="sm">{L('transient · 2 h','transient · 2 jam')}</text><text x="350" y="344" class="sm">{L('history never trusted','riwayat tidak dari browser')}</text></g>
 <g class="bx hl"><rect x="480" y="80" width="200" height="80" rx="10"/><text x="580" y="106">{L('Provider adapter','Adapter provider')}</text><text x="580" y="126" class="sm">Claude Messages API</text><text x="580" y="144" class="sm">{L('or OpenAI-compatible','atau OpenAI-compatible')}</text></g>
 <g class="bx"><rect x="480" y="180" width="200" height="80" rx="10"/><text x="580" y="206">submit_project_brief</text><text x="580" y="226" class="sm">{L('strict JSON schema','skema JSON ketat')}</text><text x="580" y="244" class="sm">{L('validated on server','divalidasi di server')}</text></g>
-<g class="bx hl"><rect x="480" y="280" width="200" height="110" rx="10"/><text x="580" y="306">{L('Brief pipeline','Pipeline brief')}</text><text x="580" y="328" class="sm">{L('AI Briefs (private post type)','AI Briefs (post type privat)')}</text><text x="580" y="348" class="sm">{L('PDF (FPDF, private folder)','PDF (FPDF, folder privat)')}</text><text x="580" y="368" class="sm">{L('HTML email via wp_mail','Email HTML via wp_mail')}</text></g>
+<g class="bx hl"><rect x="480" y="280" width="200" height="110" rx="10"/><text x="580" y="306">{L('Brief pipeline','Pipeline brief')}</text><text x="580" y="328" class="sm">{L('AI Briefs (private post type)','AI Briefs (post type privat)')}</text><text x="580" y="348" class="sm">{L('PDF (built-in, private folder)','PDF (bawaan, folder privat)')}</text><text x="580" y="368" class="sm">{L('HTML email via wp_mail','Email HTML via wp_mail')}</text></g>
 <g class="bx"><rect x="740" y="80" width="210" height="80" rx="10"/><text x="845" y="106">Anthropic API</text><text x="845" y="126" class="sm">claude-opus-5-5 ({L('default','bawaan')})</text><text x="845" y="144" class="sm">{L('refusal fallback on','fallback refusal aktif')}</text></g>
 <g class="bx"><rect x="740" y="180" width="210" height="62" rx="10"/><text x="845" y="206">Gemini · Groq · OpenRouter</text><text x="845" y="226" class="sm">{L('optional alternatives','alternatif opsional')}</text></g>
 <g class="bx"><rect x="740" y="300" width="210" height="62" rx="10"/><text x="845" y="326">SMTP</text><text x="845" y="346" class="sm">{L('WP Mail SMTP → owner inbox','WP Mail SMTP → inbox pemilik')}</text></g>
@@ -188,11 +188,16 @@ def content():
             table([T("Setting", "Pengaturan"), T("Default", "Bawaan"), T("Purpose", "Fungsi")], [
                 [T("Show the assistant", "Tampilkan asisten"), "on", T("Master switch for the widget", "Saklar utama widget")],
                 [T("Test mode", "Mode uji"), "on", T("Only logged-in administrators see and can use the assistant", "Hanya administrator yang login yang bisa melihat dan memakai asisten")],
+                [T("Business name", "Nama bisnis"), T("site title", "judul situs"), T("Name the assistant uses for your business, in emails and the PDF", "Nama bisnis yang dipakai asisten, di email, dan di PDF")],
+                [T("About your business", "Tentang bisnis Anda"), "", T("Short description: what you do, for whom, example work. The assistant uses it to answer questions and suggest services.", "Deskripsi singkat: apa yang Anda kerjakan, untuk siapa, contoh pekerjaan. Asisten memakainya untuk menjawab dan menyarankan layanan.")],
+                [T("Services", "Layanan"), T("3 examples", "3 contoh"), T("One per line (max 12). Each brief is tagged with the relevant services.", "Satu per baris (maks. 12). Setiap brief ditandai dengan layanan yang relevan.")],
+                [T("Extra instructions · Greeting", "Instruksi tambahan · Sapaan"), "", T("Optional rules for the assistant, and the first chat message in English / Indonesian", "Aturan opsional untuk asisten, dan pesan pertama chat dalam bahasa Inggris / Indonesia")],
                 [T("AI provider", "Penyedia AI"), "Anthropic", T("Anthropic, OpenAI, Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, custom OpenAI-compatible, or Off (form only)", "Anthropic, OpenAI, Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, OpenAI-compatible kustom, atau Off (hanya formulir)")],
                 [T("Model", "Model"), "<code>claude-opus-5-5</code>", T("Any model ID of the selected provider; change it when you switch provider (for example a GPT model for OpenAI). Claude Sonnet 5.5 / Haiku 5.5 cost less than Opus.", "ID model apa pun dari penyedia terpilih; ganti saat berpindah penyedia (misalnya model GPT untuk OpenAI). Claude Sonnet 5.5 / Haiku 5.5 lebih hemat daripada Opus.")],
                 [T("Effort (Claude)", "Effort (Claude)"), "medium", T("Thinking depth: low, medium or high", "Kedalaman berpikir: low, medium, atau high")],
-                [T("Send briefs to", "Kirim brief ke"), "hello@ognivid.com", T("Owner inbox; optional copy to the customer", "Inbox pemilik; salinan opsional ke pelanggan")],
-                [T("WhatsApp number", "Nomor WhatsApp"), "62852…", T("Follow-up link shown to customers", "Link tindak lanjut untuk pelanggan")],
+                [T("Send briefs to", "Kirim brief ke"), T("admin email", "email admin"), T("Owner inbox; optional copy to the customer", "Inbox pemilik; salinan opsional ke pelanggan")],
+                [T("Accent colour", "Warna aksen"), "#7cff3b", T("Colour of the chat button, email and PDF header", "Warna tombol chat, email, dan header PDF")],
+                [T("WhatsApp number", "Nomor WhatsApp"), T("empty", "kosong"), T("Follow-up link shown to customers", "Link tindak lanjut untuk pelanggan")],
                 [T("Button position", "Posisi tombol"), T("bottom left", "kiri bawah"), T("Avoids overlapping a WhatsApp button on the right", "Menghindari tumpang tindih dengan tombol WhatsApp di kanan")],
                 [T("Limits", "Batas"), "25 · 1500 · 40 · 60", T("Messages per conversation · characters per message · messages per IP per hour · AI conversations per day", "Pesan per percakapan · karakter per pesan · pesan per IP per jam · percakapan AI per hari")],
             ])),
@@ -220,12 +225,13 @@ def content():
         section("components", T("Components", "Komponen"),
             table([T("File", "File"), T("Responsibility", "Tanggung jawab")], [
                 ["<code>ognivid-ai-assistant.php</code>", T("Plugin bootstrap and hooks", "Bootstrap plugin dan hook")],
-                ["<code>includes/class-oaa-settings.php</code>", T("Settings page, defaults and sanitising", "Halaman pengaturan, nilai bawaan, dan sanitasi")],
-                ["<code>includes/class-oaa-provider.php</code>", T("System prompt, brief schema, Claude and OpenAI-compatible adapters", "System prompt, skema brief, adapter Claude dan OpenAI-compatible")],
-                ["<code>includes/class-oaa-chat.php</code>", T("REST endpoints, sessions, limits, widget loading", "Endpoint REST, sesi, batas, pemuatan widget")],
-                ["<code>includes/class-oaa-brief.php</code>", T("AI Briefs post type, PDF, HTML email, admin view", "Post type AI Briefs, PDF, email HTML, tampilan admin")],
+                ["<code>includes/class-ognivid-ai-settings.php</code>", T("Settings page, defaults and sanitising", "Halaman pengaturan, nilai bawaan, dan sanitasi")],
+                ["<code>includes/class-ognivid-ai-provider.php</code>", T("System prompt, brief schema, Claude and OpenAI-compatible adapters", "System prompt, skema brief, adapter Claude dan OpenAI-compatible")],
+                ["<code>includes/class-ognivid-ai-chat.php</code>", T("REST endpoints, sessions, limits, widget loading", "Endpoint REST, sesi, batas, pemuatan widget")],
+                ["<code>includes/class-ognivid-ai-brief.php</code>", T("AI Briefs post type, PDF, HTML email, admin view", "Post type AI Briefs, PDF, email HTML, tampilan admin")],
                 ["<code>assets/widget.js</code> · <code>widget.css</code>", T("Chat and form UI (no dependencies)", "UI chat dan formulir (tanpa dependensi)")],
-                ["<code>includes/fpdf/</code>", T("FPDF 1.9 library for PDF generation (its own permissive licence)", "Library FPDF 1.9 untuk membuat PDF (lisensi permisif tersendiri)")],
+                ["<code>includes/class-ognivid-ai-pdf.php</code>", T("Small built-in PDF writer (no third-party library)", "Penulis PDF bawaan yang ringkas (tanpa library pihak ketiga)")],
+                ["<code>uninstall.php</code>", T("Removes plugin options when the plugin is deleted (briefs are kept)", "Menghapus opsi plugin saat plugin dihapus (brief tetap disimpan)")],
             ])),
 
         section("troubleshooting", T("Troubleshooting", "Pemecahan masalah"),
@@ -355,7 +361,7 @@ def page():
   <div class="eyebrow">{s(T("WordPress plugin · Documentation", "Plugin WordPress · Dokumentasi"))}</div>
   <h1>OGNIVID AI Assistant</h1>
   <p>{s(T("AI intake assistant that interviews website visitors and delivers a structured Project Brief by email and PDF", "Asisten AI yang mewawancarai pengunjung website dan mengirim Project Brief terstruktur lewat email dan PDF"))}</p>
-  <div class="meta">{s(T("Version 1.2 · November 2026 · For site owners, developers and integration engineers", "Versi 1.2 · November 2026 · Untuk pemilik situs, developer, dan integration engineer"))}</div>
+  <div class="meta">{s(T("Version 2.0 · November 2026 · For site owners, developers and integration engineers", "Versi 2.0 · November 2026 · Untuk pemilik situs, developer, dan integration engineer"))}</div>
   <p style="margin-top:18px"><a class="btn" href="{"" if LANG == "en" else "../"}../demo/{"" if LANG == "en" else "?lang=id"}">{s(T("Open the live mockup", "Buka live mockup"))} →</a> <a class="btn" style="background:transparent;border:1px solid #4a4a4a;color:#fff;margin-left:8px" href="https://github.com/diimasogan/ognivid-ai-assistant/releases/latest/download/ognivid-ai-assistant.zip" download>⬇ {s(T("Download ZIP", "Unduh ZIP"))}</a></p>
 </div></header>
 <nav class="toc" aria-label="Contents"><div class="wrap">{toc}<span class="spacer"></span>

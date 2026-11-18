@@ -251,15 +251,15 @@ footer{padding:40px 0 70px;color:var(--muted);font-size:14px}
     }
     return realFetch(url, opts);
   };
-  try { ['oaa_sid', 'oaa_hist', 'oaa_done'].forEach(function (k) { sessionStorage.removeItem(k); }); } catch (e) {}
-  window.OAA_CFG = { rest: REST, position: 'left', aiOn: true, maxChars: 1500, wa: '6285280052326', test: false, nonce: '' };
+  try { ['ognivid_ai_sid', 'ognivid_ai_hist', 'ognivid_ai_done'].forEach(function (k) { sessionStorage.removeItem(k); }); } catch (e) {}
+  window.ognividAiCfg = { rest: REST, brand: 'OGNIVID', accent: '#7cff3b', helloEn: "Hi! 👋 I'm the OGNIVID assistant. Tell me what you need help with (for example file transfer, system integration, AI agents or a Power BI dashboard) and I'll turn it into a project brief for our team.", helloId: 'Halo! 👋 Saya asisten OGNIVID. Ceritakan apa yang perlu dibantu (misalnya file transfer, integrasi sistem, AI agent, atau dashboard Power BI), dan saya akan menyusunnya menjadi project brief untuk tim kami.', position: 'left', aiOn: true, maxChars: 1500, wa: '6285280052326', test: false, nonce: '' };
   document.getElementById('try').addEventListener('click', function () { var b = document.querySelector('.oaa-launch'); if (b && document.querySelector('.oaa-panel').hidden) b.click(); });
 })();
 </script>
 <script src="../assets/widget.js"></script>
 <script>
   // "New chat" in the widget should also restart the scripted interview.
-  document.addEventListener('click', function (e) { if (e.target && e.target.classList && e.target.classList.contains('oaa-new')) { location.reload(); } });
+  document.addEventListener('click', function (e) { if (e.target && e.target.classList && e.target.classList.contains('ognivid-ai-new')) { location.reload(); } });
   setTimeout(function () { var b = document.querySelector('.oaa-launch'); if (b && window.innerWidth > 700) b.click(); }, 900);
 </script>
 </body>

@@ -1,6 +1,6 @@
 # OGNIVID AI Assistant
 
-WordPress plugin: an AI intake assistant that interviews website visitors about their project and delivers a structured **Project Brief** (HTML email + PDF) to the site owner. Built for [ognivid.com](https://ognivid.com/).
+WordPress plugin: an AI intake assistant that interviews website visitors about their project and delivers a structured **Project Brief** (HTML email + PDF) to the site owner. Works for any business: set your business name, description and services in the settings. Built for and running on [ognivid.com](https://ognivid.com/).
 
 📖 **Documentation:** [English](https://diimasogan.github.io/ognivid-ai-assistant/docs/OGNIVID-AI-Assistant-Documentation.html) · [Bahasa Indonesia](https://diimasogan.github.io/ognivid-ai-assistant/docs/id/OGNIVID-AI-Assistant-Dokumentasi.html)
 ▶️ **Live mockup:** [try the assistant in your browser](https://diimasogan.github.io/ognivid-ai-assistant/demo/) (simulated AI, nothing is sent)
@@ -35,10 +35,11 @@ Requirements: WordPress 6.x, PHP 7.4+ (tested on PHP 8.2), outbound HTTPS, worki
 ## Set it up
 
 1. Open **Settings → OGNIVID AI Assistant**. The plugin starts in **test mode**: only logged-in administrators see the widget.
-2. Choose an **AI provider**, paste its **API key** and type a **model ID** from that provider (default: `claude-opus-5-5`). Leave the key empty to run in form-only mode.
-3. Set **Send briefs to** (your inbox) and your **WhatsApp number**, choose the button position, and adjust the limits if needed. Click **Save Changes**.
-4. Open your site while logged in, send a test message or a test form, and check that the brief arrives by email and in **AI Briefs**.
-5. Untick **Test mode** and save. The assistant is now live for every visitor.
+2. Fill in **Your business**: business name, a short description, your services (one per line), optional extra instructions and greetings. The assistant uses this to talk about your business.
+3. Choose an **AI provider**, paste its **API key** and type a **model ID** from that provider (default: `claude-opus-5-5`). Leave the key empty to run in form-only mode.
+4. Set **Send briefs to** (your inbox), your **WhatsApp number** and the **accent colour**, choose the button position, and adjust the limits if needed. Click **Save Changes**.
+5. Open your site while logged in, send a test message or a test form, and check that the brief arrives by email and in **AI Briefs**.
+6. Untick **Test mode** and save. The assistant is now live for every visitor.
 
 | Provider | Where to get an API key | Model ID |
 |---|---|---|
@@ -72,11 +73,15 @@ Requirements: WordPress 6.x, PHP 7.4+ (tested on PHP 8.2), outbound HTTPS, worki
 
 ```
 ognivid-ai-assistant.php          Plugin bootstrap and hooks
-includes/class-oaa-settings.php   Settings page, defaults, sanitising
-includes/class-oaa-provider.php   Provider registry, system prompt, brief schema, Claude + OpenAI-compatible adapters
-includes/class-oaa-chat.php       REST endpoints, sessions, limits, widget loading
-includes/class-oaa-brief.php      AI Briefs post type and admin inbox, PDF, HTML email
-includes/fpdf/                    FPDF 1.9 (PDF generation, own licence)
+includes/class-ognivid-ai-settings.php   Settings page, business profile, defaults, sanitising, 1.x migration
+includes/class-ognivid-ai-provider.php   Provider registry, system prompt, brief schema, Claude + OpenAI-compatible adapters
+includes/class-ognivid-ai-chat.php       REST endpoints, sessions, limits, widget loading
+includes/class-ognivid-ai-brief.php      AI Briefs post type and admin inbox, PDF, HTML email
+includes/class-ognivid-ai-pdf.php        Small built-in PDF writer (no third-party library)
+uninstall.php                            Removes plugin options on delete (briefs are kept)
+readme.txt                               WordPress.org plugin directory readme
+.wordpress-org/                          Directory banner, icon and screenshots
+bin/build-zip.sh                         Builds dist/ognivid-ai-assistant.zip
 assets/widget.js, widget.css      Chat + form UI (no dependencies)
 demo/index.html                   Live mockup (real widget + simulated backend, runs on GitHub Pages)
 docs/                             Bilingual HTML documentation (built by docs/_source/build_docs.py)
@@ -112,10 +117,11 @@ Plugin WordPress berisi asisten AI yang mewawancarai pengunjung website tentang 
 
 ### Pengaturan awal
 1. Buka **Settings → OGNIVID AI Assistant**. Plugin dimulai dalam **mode uji** (hanya admin yang melihat widget).
-2. Pilih **penyedia AI** (Claude, OpenAI/ChatGPT, Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, atau kustom), tempel **API key**-nya, dan isi **ID model** dari penyedia tersebut. Kosongkan key untuk mode formulir saja.
-3. Isi **Send briefs to** (email Anda) dan **nomor WhatsApp**, lalu **Save Changes**.
-4. Uji satu pesan atau formulir sebagai admin, pastikan brief masuk ke email dan ke **AI Briefs**.
-5. Hilangkan centang **Test mode** dan simpan. Asisten aktif untuk semua pengunjung.
+2. Isi **Your business**: nama bisnis, deskripsi singkat, layanan (satu per baris), instruksi tambahan dan sapaan (opsional).
+3. Pilih **penyedia AI** (Claude, OpenAI/ChatGPT, Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, atau kustom), tempel **API key**-nya, dan isi **ID model** dari penyedia tersebut. Kosongkan key untuk mode formulir saja.
+4. Isi **Send briefs to** (email Anda), **nomor WhatsApp** dan **warna aksen**, lalu **Save Changes**.
+5. Uji satu pesan atau formulir sebagai admin, pastikan brief masuk ke email dan ke **AI Briefs**.
+6. Hilangkan centang **Test mode** dan simpan. Asisten aktif untuk semua pengunjung.
 
 Langganan ChatGPT Plus atau Claude Pro **tidak** termasuk akses API. Setiap penyedia menagih pemakaian API secara terpisah.
 
@@ -127,4 +133,6 @@ Coba langsung: [live mockup](https://diimasogan.github.io/ognivid-ai-assistant/d
 
 ## License
 
-GPL-2.0-or-later. Bundled [FPDF](http://www.fpdf.org/) is distributed under its own permissive licence (`includes/fpdf/license.txt`).
+GPL-2.0-or-later.
+
+**Upgrading from 1.x:** version 2.0 renames all internal prefixes to `ognivid_ai_`; settings and saved briefs are migrated automatically on the first page load after the update.

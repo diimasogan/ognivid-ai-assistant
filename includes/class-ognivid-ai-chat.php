@@ -9,13 +9,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Conversation state lives server-side (transient keyed by a random session id), so visitors
  * cannot inject assistant turns and Claude's thinking blocks are replayed unchanged.
  */
-class OAA_Chat {
+class Ognivid_AI_Chat {
 
 	const NS          = 'ognivid-ai/v1';
 	const SESSION_TTL = 7200; // 2 hours
 
 	public static function visible() {
-		$o = OAA_Settings::get();
+		$o = Ognivid_AI_Settings::get();
 		if ( empty( $o['enabled'] ) || is_admin() ) {
 			return false;
 		}
@@ -29,12 +29,12 @@ class OAA_Chat {
 		if ( ! self::visible() ) {
 			return;
 		}
-		$o = OAA_Settings::get();
-		wp_enqueue_style( 'oaa-widget', OAA_URL . 'assets/widget.css', array(), OAA_VERSION );
-		wp_enqueue_script( 'oaa-widget', OAA_URL . 'assets/widget.js', array(), OAA_VERSION, true );
+		$o = Ognivid_AI_Settings::get();
+		wp_enqueue_style( 'ognivid-ai-widget', OGNIVID_AI_URL . 'assets/widget.css', array(), OGNIVID_AI_VERSION );
+		wp_enqueue_script( 'ognivid-ai-widget', OGNIVID_AI_URL . 'assets/widget.js', array(), OGNIVID_AI_VERSION, true );
 		wp_localize_script(
-			'oaa-widget',
-			'OAA_CFG',
+			'ognivid-ai-widget',
+			'ognividAiCfg',
 			array(
 				'rest'     => esc_url_raw( rest_url( self::NS ) ),
 				'position' => $o['position'],
@@ -42,6 +42,10 @@ class OAA_Chat {
 				'maxChars' => (int) $o['max_chars'],
 				'wa'       => preg_replace( '/\D+/', '', $o['whatsapp'] ),
 				'test'     => ! empty( $o['test_mode'] ),
+				'brand'    => $o['business_name'],
+				'accent'   => $o['accent'],
+				'helloEn'  => $o['greeting_en'],
+				'helloId'  => $o['greeting_id'],
 				// Only logged-in users get a REST nonce (needed for test mode); public cached pages never carry one.
 				'nonce'    => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 			)
@@ -63,7 +67,7 @@ class OAA_Chat {
 
 	private static function ip_key() {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '0';
-		return substr( hash( 'sha256', $ip . get_option( 'oaa_salt', 'oaa' ) ), 0, 20 );
+		return substr( hash( 'sha256', $ip . get_option( 'ognivid_ai_salt', 'ognivid-ai' ) ), 0, 20 );
 	}
 
 	/** Increment a counter; return the new value. */
@@ -95,7 +99,7 @@ class OAA_Chat {
 				'limit'   => 'You have reached the message limit for now. You can still send us your request with the short form below.',
 				'busy'    => 'Our AI assistant is not available right now. Please use the short form below and we will get back to you.',
 				'refusal' => 'Sorry, I can\'t help with that here. If you have a project in mind, tell me about it, or use the short form below.',
-				'done'    => 'Thank you, %s! Your project brief (ref. %s) has been sent to the OGNIVID team. We will contact you at %s, usually within 1-2 business days.',
+				'done'    => 'Thank you, %1$s! Your project brief (ref. %2$s) has been sent to the %4$s team. We will contact you at %3$s, usually within 1-2 business days.',
 				'email'   => 'That email address doesn\'t look valid. Could you check it?',
 				'closed'  => 'This conversation is complete. Start a new chat if you want to send another request.',
 				'spam'    => 'Something went wrong. Please try again.',
@@ -104,7 +108,7 @@ class OAA_Chat {
 				'limit'   => 'Batas pesan untuk saat ini sudah tercapai. Anda tetap bisa mengirim permintaan lewat formulir singkat di bawah.',
 				'busy'    => 'Asisten AI kami sedang tidak tersedia. Silakan isi formulir singkat di bawah dan kami akan menghubungi Anda.',
 				'refusal' => 'Maaf, saya tidak bisa membantu hal tersebut di sini. Jika Anda punya rencana proyek, ceritakan kepada saya, atau gunakan formulir singkat di bawah.',
-				'done'    => 'Terima kasih, %s! Project brief Anda (ref. %s) sudah terkirim ke tim OGNIVID. Kami akan menghubungi Anda di %s, biasanya dalam 1-2 hari kerja.',
+				'done'    => 'Terima kasih, %1$s! Project brief Anda (ref. %2$s) sudah terkirim ke tim %4$s. Kami akan menghubungi Anda di %3$s, biasanya dalam 1-2 hari kerja.',
 				'email'   => 'Alamat email tersebut sepertinya tidak valid. Bisa dicek kembali?',
 				'closed'  => 'Percakapan ini sudah selesai. Mulai chat baru jika ingin mengirim permintaan lain.',
 				'spam'    => 'Terjadi kesalahan. Silakan coba lagi.',
@@ -128,7 +132,7 @@ class OAA_Chat {
 	/* ---------- endpoints ---------- */
 
 	public static function chat( WP_REST_Request $req ) {
-		$o    = OAA_Settings::get();
+		$o    = Ognivid_AI_Settings::get();
 		$lang = self::lang( $req );
 		if ( ! self::same_origin() ) {
 			return new WP_REST_Response( array( 'error' => 'origin' ), 403 );
@@ -146,17 +150,17 @@ class OAA_Chat {
 		if ( 'off' === $o['provider'] || '' === $o['api_key'] ) {
 			return self::fallback( $lang, 'busy', $sid );
 		}
-		if ( self::bump( 'oaa_ip_' . self::ip_key() . '_' . gmdate( 'YmdH' ), HOUR_IN_SECONDS ) > (int) $o['hourly_per_ip'] ) {
+		if ( self::bump( 'ognivid_ai_ip_' . self::ip_key() . '_' . gmdate( 'YmdH' ), HOUR_IN_SECONDS ) > (int) $o['hourly_per_ip'] ) {
 			return self::fallback( $lang, 'limit', $sid );
 		}
 
-		$s = $sid ? get_transient( 'oaa_s_' . $sid ) : false;
+		$s = $sid ? get_transient( 'ognivid_ai_s_' . $sid ) : false;
 		if ( ! is_array( $s ) || $s['provider'] !== $o['provider'] ) {
-			$daily = (int) get_transient( 'oaa_daily_' . wp_date( 'Ymd' ) );
+			$daily = (int) get_transient( 'ognivid_ai_daily_' . wp_date( 'Ymd' ) );
 			if ( $daily >= (int) $o['daily_sessions'] ) {
 				return self::fallback( $lang, 'limit' );
 			}
-			set_transient( 'oaa_daily_' . wp_date( 'Ymd' ), $daily + 1, DAY_IN_SECONDS );
+			set_transient( 'ognivid_ai_daily_' . wp_date( 'Ymd' ), $daily + 1, DAY_IN_SECONDS );
 			$sid = wp_generate_password( 24, false );
 			$s   = array( 'provider' => $o['provider'], 'messages' => array(), 'log' => array(), 'turns' => 0, 'done' => false, 'lang' => $lang );
 		}
@@ -168,20 +172,22 @@ class OAA_Chat {
 		}
 
 		$s['turns']++;
-		$s['messages'][] = OAA_Provider::user_message( $text );
+		$s['messages'][] = Ognivid_AI_Provider::user_message( $text );
 		$s['log'][]      = array( 'user', $text );
 
 		$reply = '';
 		$done  = false;
 		for ( $i = 0; $i < 3; $i++ ) { // at most 2 self-corrections (e.g. invalid email)
-			$r = OAA_Provider::call( $s['messages'], $s['lang'] );
+			$r = Ognivid_AI_Provider::call( $s['messages'], $s['lang'] );
 			if ( ! $r['ok'] ) {
-				error_log( 'OGNIVID AI Assistant: ' . $r['error'] ); // phpcs:ignore
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'OGNIVID AI Assistant: ' . $r['error'] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				}
 				// Drop the unanswered user turn so the history stays valid.
 				array_pop( $s['messages'] );
 				array_pop( $s['log'] );
 				$s['turns']--;
-				set_transient( 'oaa_s_' . $sid, $s, self::SESSION_TTL );
+				set_transient( 'ognivid_ai_s_' . $sid, $s, self::SESSION_TTL );
 				return self::fallback( $lang, $r['refusal'] ? 'refusal' : 'busy', $sid );
 			}
 			$s['messages'][] = $r['assistant'];
@@ -192,23 +198,23 @@ class OAA_Chat {
 			if ( ! $r['tool'] ) {
 				break;
 			}
-			$brief = OAA_Brief::normalize( $r['tool']['input'] );
+			$brief = Ognivid_AI_Brief::normalize( $r['tool']['input'] );
 			if ( ! is_email( $brief['customer']['email'] ) || '' === $brief['customer']['name'] ) {
-				$s['messages'][] = OAA_Provider::tool_error( $r['tool'], 'The customer name or email is missing or invalid. Ask the customer for a valid name and email address, then submit again.' );
+				$s['messages'][] = Ognivid_AI_Provider::tool_error( $r['tool'], 'The customer name or email is missing or invalid. Ask the customer for a valid name and email address, then submit again.' );
 				continue;
 			}
-			$id = OAA_Brief::submit( $brief, 'ai', self::transcript( $s ) );
+			$id = Ognivid_AI_Brief::submit( $brief, 'ai', self::transcript( $s ) );
 			if ( is_wp_error( $id ) ) {
-				$s['messages'][] = OAA_Provider::tool_error( $r['tool'], 'Could not submit: ' . $id->get_error_message() );
+				$s['messages'][] = Ognivid_AI_Provider::tool_error( $r['tool'], 'Could not submit: ' . $id->get_error_message() );
 				continue;
 			}
 			$done      = true;
 			$s['done'] = true;
-			$reply     = sprintf( self::msg( $brief['language'], 'done' ), $brief['customer']['name'], get_post_meta( $id, '_oaa_ref', true ), $brief['customer']['email'] );
+			$reply     = sprintf( self::msg( $brief['language'], 'done' ), $brief['customer']['name'], get_post_meta( $id, '_ognivid_ai_ref', true ), $brief['customer']['email'], $o['business_name'] );
 			$s['log'][] = array( 'assistant', $reply );
 			break;
 		}
-		set_transient( 'oaa_s_' . $sid, $s, self::SESSION_TTL );
+		set_transient( 'ognivid_ai_s_' . $sid, $s, self::SESSION_TTL );
 		if ( '' === $reply ) {
 			$reply = 'id' === $lang ? 'Bisa dijelaskan sedikit lagi?' : 'Could you tell me a bit more?';
 		}
@@ -217,7 +223,7 @@ class OAA_Chat {
 
 	/** Same visibility rule as the widget, evaluated for REST calls (cookie auth may be absent). */
 	private static function visible_for_rest() {
-		$o = OAA_Settings::get();
+		$o = Ognivid_AI_Settings::get();
 		if ( empty( $o['enabled'] ) ) {
 			return false;
 		}
@@ -226,7 +232,7 @@ class OAA_Chat {
 	}
 
 	public static function form( WP_REST_Request $req ) {
-		$o    = OAA_Settings::get();
+		$o    = Ognivid_AI_Settings::get();
 		$lang = self::lang( $req );
 		if ( ! self::same_origin() || ! self::visible_for_rest() ) {
 			return new WP_REST_Response( array( 'error' => 'forbidden' ), 403 );
@@ -235,7 +241,7 @@ class OAA_Chat {
 		if ( '' !== (string) $req->get_param( 'website' ) || ( time() - (int) $req->get_param( 'ts' ) ) < 4 ) {
 			return new WP_REST_Response( array( 'ok' => false, 'reply' => self::msg( $lang, 'spam' ) ), 400 );
 		}
-		if ( self::bump( 'oaa_form_' . self::ip_key() . '_' . gmdate( 'YmdH' ), HOUR_IN_SECONDS ) > 5 ) {
+		if ( self::bump( 'ognivid_ai_form_' . self::ip_key() . '_' . gmdate( 'YmdH' ), HOUR_IN_SECONDS ) > 5 ) {
 			return new WP_REST_Response( array( 'ok' => false, 'reply' => self::msg( $lang, 'limit' ) ), 429 );
 		}
 		$f     = function ( $k ) use ( $req ) {
@@ -266,10 +272,10 @@ class OAA_Chat {
 		if ( '' === $brief['customer']['name'] || ! is_email( $brief['customer']['email'] ) || mb_strlen( $problem ) < 10 ) {
 			return new WP_REST_Response( array( 'ok' => false, 'reply' => self::msg( $lang, 'email' ) ), 400 );
 		}
-		$id = OAA_Brief::submit( $brief, 'form' );
+		$id = Ognivid_AI_Brief::submit( $brief, 'form' );
 		if ( is_wp_error( $id ) ) {
 			return new WP_REST_Response( array( 'ok' => false, 'reply' => self::msg( $lang, 'spam' ) ), 500 );
 		}
-		return new WP_REST_Response( array( 'ok' => true, 'reply' => sprintf( self::msg( $lang, 'done' ), $brief['customer']['name'], get_post_meta( $id, '_oaa_ref', true ), $brief['customer']['email'] ) ), 200 );
+		return new WP_REST_Response( array( 'ok' => true, 'reply' => sprintf( self::msg( $lang, 'done' ), $brief['customer']['name'], get_post_meta( $id, '_ognivid_ai_ref', true ), $brief['customer']['email'], $o['business_name'] ) ), 200 );
 	}
 }

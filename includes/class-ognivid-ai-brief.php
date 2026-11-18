@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Project briefs: storage (private post type), PDF and HTML email.
  */
-class OAA_Brief {
+class Ognivid_AI_Brief {
 
-	const CPT = 'oaa_brief';
+	const CPT = 'ognivid_ai_brief';
 
 	public static function register_post_type() {
 		register_post_type(
@@ -32,15 +32,22 @@ class OAA_Brief {
 	/** Private folder for PDFs. */
 	public static function ensure_storage() {
 		$up  = wp_upload_dir();
-		$dir = trailingslashit( $up['basedir'] ) . 'oaa-briefs';
+		$dir = trailingslashit( $up['basedir'] ) . 'ognivid-ai-briefs';
 		if ( ! is_dir( $dir ) ) {
 			wp_mkdir_p( $dir );
 		}
-		if ( ! file_exists( $dir . '/.htaccess' ) ) {
-			file_put_contents( $dir . '/.htaccess', "Require all denied\nDeny from all\n" ); // phpcs:ignore
+		global $wp_filesystem;
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
 		}
-		if ( ! file_exists( $dir . '/index.php' ) ) {
-			file_put_contents( $dir . '/index.php', "<?php // Silence is golden.\n" ); // phpcs:ignore
+		if ( $wp_filesystem ) {
+			if ( ! $wp_filesystem->exists( $dir . '/.htaccess' ) ) {
+				$wp_filesystem->put_contents( $dir . '/.htaccess', "Require all denied\nDeny from all\n", FS_CHMOD_FILE );
+			}
+			if ( ! $wp_filesystem->exists( $dir . '/index.php' ) ) {
+				$wp_filesystem->put_contents( $dir . '/index.php', "<?php // Silence is golden.\n", FS_CHMOD_FILE );
+			}
 		}
 		return $dir;
 	}
@@ -92,22 +99,24 @@ class OAA_Brief {
 
 	/** Labels in the brief's language. */
 	public static function t( $lang ) {
-		$en = array(
+		$bn   = Ognivid_AI_Settings::get( 'business_name' );
+		$host = wp_parse_url( home_url(), PHP_URL_HOST );
+		$en   = array(
 			'doc' => 'Project Brief', 'customer' => 'Customer', 'name' => 'Name', 'email' => 'Email', 'company' => 'Company', 'phone' => 'Phone / WhatsApp', 'role' => 'Role',
 			'summary' => 'Summary', 'problem' => 'Problem', 'goals' => 'Goals', 'systems' => 'Current systems', 'req' => 'Requirements', 'constraints' => 'Constraints',
 			'urgency' => 'Urgency', 'timeline' => 'Timeline', 'budget' => 'Budget', 'services' => 'Relevant services', 'reco' => 'Initial recommendation (non-binding)',
-			'questions' => 'Open questions', 'source' => 'Source', 'ai' => 'AI assistant on ognivid.com', 'form' => 'Brief form on ognivid.com', 'date' => 'Date', 'ref' => 'Reference',
+			'questions' => 'Open questions', 'source' => 'Source', 'ai' => 'AI assistant on ' . $host, 'form' => 'Brief form on ' . $host, 'date' => 'Date', 'ref' => 'Reference',
 			'none' => 'Not specified', 'urg' => array( 'low' => 'Low', 'medium' => 'Medium', 'high' => 'High', 'critical' => 'Critical' ),
-			'mail_hi' => 'Hi %s,', 'mail_body' => 'Thank you for contacting OGNIVID. Here is a copy of the project brief we received. Our team will review it and get back to you, usually within 1-2 business days.',
+			'mail_hi' => 'Hi %s,', 'mail_body' => 'Thank you for contacting ' . $bn . '. Here is a copy of the project brief we received. Our team will review it and get back to you, usually within 1-2 business days.',
 			'mail_wa' => 'Need to add something? Reply to this email or chat with us on WhatsApp:', 'mail_subject_c' => 'Your project brief: %s', 'transcript' => 'Conversation transcript',
 		);
 		$id = array(
 			'doc' => 'Project Brief', 'customer' => 'Pelanggan', 'name' => 'Nama', 'email' => 'Email', 'company' => 'Perusahaan', 'phone' => 'Telepon / WhatsApp', 'role' => 'Jabatan',
 			'summary' => 'Ringkasan', 'problem' => 'Masalah', 'goals' => 'Tujuan', 'systems' => 'Sistem saat ini', 'req' => 'Kebutuhan', 'constraints' => 'Batasan',
 			'urgency' => 'Urgensi', 'timeline' => 'Target waktu', 'budget' => 'Anggaran', 'services' => 'Layanan terkait', 'reco' => 'Rekomendasi awal (tidak mengikat)',
-			'questions' => 'Pertanyaan terbuka', 'source' => 'Sumber', 'ai' => 'Asisten AI di ognivid.com', 'form' => 'Formulir brief di ognivid.com', 'date' => 'Tanggal', 'ref' => 'Referensi',
+			'questions' => 'Pertanyaan terbuka', 'source' => 'Sumber', 'ai' => 'Asisten AI di ' . $host, 'form' => 'Formulir brief di ' . $host, 'date' => 'Tanggal', 'ref' => 'Referensi',
 			'none' => 'Belum ditentukan', 'urg' => array( 'low' => 'Rendah', 'medium' => 'Sedang', 'high' => 'Tinggi', 'critical' => 'Kritis' ),
-			'mail_hi' => 'Halo %s,', 'mail_body' => 'Terima kasih telah menghubungi OGNIVID. Berikut salinan project brief yang kami terima. Tim kami akan meninjaunya dan menghubungi Anda, biasanya dalam 1-2 hari kerja.',
+			'mail_hi' => 'Halo %s,', 'mail_body' => 'Terima kasih telah menghubungi ' . $bn . '. Berikut salinan project brief yang kami terima. Tim kami akan meninjaunya dan menghubungi Anda, biasanya dalam 1-2 hari kerja.',
 			'mail_wa' => 'Ada yang ingin ditambahkan? Balas email ini atau chat kami di WhatsApp:', 'mail_subject_c' => 'Project brief Anda: %s', 'transcript' => 'Transkrip percakapan',
 		);
 		return 'id' === $lang ? $id : $en;
@@ -138,16 +147,16 @@ class OAA_Brief {
 			return $post_id;
 		}
 		$ref = 'OGN-' . wp_date( 'ymd' ) . '-' . $post_id;
-		update_post_meta( $post_id, '_oaa_brief', wp_slash( wp_json_encode( $b ) ) );
-		update_post_meta( $post_id, '_oaa_source', $source );
-		update_post_meta( $post_id, '_oaa_ref', $ref );
-		update_post_meta( $post_id, '_oaa_status', 'new' );
+		update_post_meta( $post_id, '_ognivid_ai_brief', wp_slash( wp_json_encode( $b ) ) );
+		update_post_meta( $post_id, '_ognivid_ai_source', $source );
+		update_post_meta( $post_id, '_ognivid_ai_ref', $ref );
+		update_post_meta( $post_id, '_ognivid_ai_status', 'new' );
 		if ( $transcript ) {
-			update_post_meta( $post_id, '_oaa_transcript', wp_slash( $transcript ) );
+			update_post_meta( $post_id, '_ognivid_ai_transcript', wp_slash( $transcript ) );
 		}
 		$pdf = self::make_pdf( $b, $ref, $source, $post_id );
 		if ( $pdf ) {
-			update_post_meta( $post_id, '_oaa_pdf', $pdf );
+			update_post_meta( $post_id, '_ognivid_ai_pdf', $pdf );
 		}
 		self::send_emails( $b, $ref, $source, $pdf, $transcript );
 		return $post_id;
@@ -180,7 +189,7 @@ class OAA_Brief {
 		$email = esc_html( $c['email'] );
 		$wa    = preg_replace( '/\D+/', '', $c['phone'] );
 		$h     = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:#111827;max-width:680px">';
-		$h    .= '<div style="background:#111111;color:#fff;padding:18px 22px;border-radius:10px 10px 0 0"><div style="font-size:12px;letter-spacing:2px;color:#7cff3b">OGNIVID</div><div style="font-size:20px;font-weight:bold;margin-top:4px">' . esc_html( $t['doc'] ) . ': ' . esc_html( $b['title'] ) . '</div></div>';
+		$h    .= '<div style="background:#111111;color:#fff;padding:18px 22px;border-radius:10px 10px 0 0"><div style="font-size:12px;letter-spacing:2px;color:' . esc_attr( Ognivid_AI_Settings::get( 'accent' ) ) . '">' . esc_html( strtoupper( Ognivid_AI_Settings::get( 'business_name' ) ) ) . '</div><div style="font-size:20px;font-weight:bold;margin-top:4px">' . esc_html( $t['doc'] ) . ': ' . esc_html( $b['title'] ) . '</div></div>';
 		$h    .= '<div style="border:1px solid #e5e7eb;border-top:0;padding:4px 22px 22px;border-radius:0 0 10px 10px">';
 		$h    .= '<table style="width:100%;border-collapse:collapse;margin-top:12px;font-size:13px">';
 		$h    .= $row( $t['ref'], esc_html( $ref ) ) . $row( $t['date'], esc_html( wp_date( 'j F Y, H:i' ) ) ) . $row( $t['source'], esc_html( 'form' === $source ? $t['form'] : $t['ai'] ) );
@@ -201,7 +210,7 @@ class OAA_Brief {
 	}
 
 	private static function send_emails( $b, $ref, $source, $pdf, $transcript ) {
-		$o       = OAA_Settings::get();
+		$o       = Ognivid_AI_Settings::get();
 		$t       = self::t( $b['language'] );
 		$c       = $b['customer'];
 		$html    = self::html( $b, $ref, $source );
@@ -212,7 +221,7 @@ class OAA_Brief {
 			$extra = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:680px;margin-top:18px"><h3 style="font-size:14px;color:#6b7280">' . esc_html( $t['transcript'] ) . '</h3><pre style="white-space:pre-wrap;font-family:inherit;font-size:12px;color:#374151;background:#f9fafb;padding:12px;border-radius:8px">' . esc_html( $transcript ) . '</pre></div>';
 		}
 		$urgent = in_array( $b['urgency'], array( 'high', 'critical' ), true ) ? '[' . strtoupper( $b['urgency'] ) . '] ' : '';
-		wp_mail( $o['recipient'], $urgent . '[OGNIVID Brief] ' . $b['title'] . ' — ' . $c['name'] . ' (' . $ref . ')', $html . $extra, $headers, $att );
+		wp_mail( $o['recipient'], $urgent . '[' . $o['business_name'] . ' Brief] ' . $b['title'] . ' — ' . $c['name'] . ' (' . $ref . ')', $html . $extra, $headers, $att );
 
 		if ( ! empty( $o['copy_to_customer'] ) ) {
 			$wa    = preg_replace( '/\D+/', '', $o['whatsapp'] );
@@ -220,79 +229,85 @@ class OAA_Brief {
 			if ( $wa ) {
 				$intro .= '<p>' . esc_html( $t['mail_wa'] ) . ' <a href="https://wa.me/' . esc_attr( $wa ) . '">+' . esc_html( $wa ) . '</a></p>';
 			}
-			$intro .= '<p>— OGNIVID</p></div>';
-			wp_mail( $c['email'], sprintf( $t['mail_subject_c'], $b['title'] ) . ' (' . $ref . ')', $intro . $html, array( 'Content-Type: text/html; charset=UTF-8', 'Reply-To: OGNIVID <' . $o['recipient'] . '>' ), $att );
+			$intro .= '<p>— ' . esc_html( $o['business_name'] ) . '</p></div>';
+			wp_mail( $c['email'], sprintf( $t['mail_subject_c'], $b['title'] ) . ' (' . $ref . ')', $intro . $html, array( 'Content-Type: text/html; charset=UTF-8', 'Reply-To: ' . str_replace( array( "\r", "\n", '<', '>' ), '', $o['business_name'] ) . ' <' . $o['recipient'] . '>' ), $att );
 		}
 	}
 
-	/** Convert UTF-8 to the core-font encoding FPDF uses. */
-	private static function pdf_text( $s ) {
-		$s = str_replace( array( '“', '”', '‘', '’', '–', '—', '…', '•' ), array( '"', '"', "'", "'", '-', '-', '...', '-' ), (string) $s );
-		$r = function_exists( 'iconv' ) ? @iconv( 'UTF-8', 'windows-1252//TRANSLIT//IGNORE', $s ) : false; // phpcs:ignore
-		return false === $r ? mb_convert_encoding( $s, 'Windows-1252', 'UTF-8' ) : $r;
-	}
-
+	/**
+	 * Render the brief as an A4 PDF in the private storage folder.
+	 *
+	 * @param array  $b       Normalised brief.
+	 * @param string $ref     Reference.
+	 * @param string $source  ai|form.
+	 * @param int    $post_id Brief post ID.
+	 * @return string File path, or '' on failure.
+	 */
 	public static function make_pdf( $b, $ref, $source, $post_id ) {
-		if ( ! class_exists( 'FPDF' ) ) {
-			require_once OAA_DIR . 'includes/fpdf/fpdf.php';
+		if ( ! class_exists( 'Ognivid_AI_PDF' ) ) {
+			require_once OGNIVID_AI_DIR . 'includes/class-ognivid-ai-pdf.php';
 		}
 		try {
 			$t   = self::t( $b['language'] );
 			$c   = $b['customer'];
-			$x   = function ( $s ) {
-				return self::pdf_text( $s );
-			};
-			$pdf = new FPDF( 'P', 'mm', 'A4' );
-			$pdf->SetMargins( 18, 18, 18 );
-			$pdf->SetAutoPageBreak( true, 18 );
-			$pdf->SetTitle( $x( 'OGNIVID ' . $t['doc'] . ' ' . $ref ) );
-			$pdf->SetAuthor( 'OGNIVID' );
-			$pdf->AddPage();
-			// Header band.
-			$pdf->SetFillColor( 17, 17, 17 );
-			$pdf->Rect( 0, 0, 210, 34, 'F' );
-			$pdf->SetXY( 18, 9 );
-			$pdf->SetTextColor( 124, 255, 59 );
-			$pdf->SetFont( 'Helvetica', 'B', 9 );
-			$pdf->Cell( 0, 5, 'OGNIVID', 0, 1 );
-			$pdf->SetX( 18 );
-			$pdf->SetTextColor( 255, 255, 255 );
-			$pdf->SetFont( 'Helvetica', 'B', 15 );
-			$pdf->MultiCell( 174, 7, $x( $t['doc'] . ': ' . $b['title'] ), 0, 'L' );
-			$pdf->SetY( 42 );
-			$pdf->SetTextColor( 17, 24, 39 );
+			$bn  = Ognivid_AI_Settings::get( 'business_name' );
+			$rgb = sscanf( Ognivid_AI_Settings::get( 'accent' ), '#%02x%02x%02x' );
+			$ink = array( 17, 24, 39 );
+			$mut = array( 107, 114, 128 );
+			$pdf = new Ognivid_AI_PDF( $bn . ' ' . $t['doc'] . ' ' . $ref, $bn );
+			$x   = 18.0;
+			$w   = 174.0;
+			$pdf->add_page();
 
-			$kv = function ( $k, $v ) use ( $pdf, $x ) {
-				$pdf->SetFont( 'Helvetica', '', 9 );
-				$pdf->SetTextColor( 107, 114, 128 );
-				$pdf->Cell( 50, 6, $x( $k ), 0, 0 );
-				$pdf->SetTextColor( 17, 24, 39 );
-				$pdf->MultiCell( 124, 6, $x( '' !== $v ? $v : '-' ), 0, 'L' );
+			// Header band.
+			$pdf->color( array( 17, 17, 17 ), 'fill' );
+			$pdf->rect( 0, 0, 210, 34 );
+			$pdf->color( array( (int) $rgb[0], (int) $rgb[1], (int) $rgb[2] ) );
+			$pdf->font( 'B', 9 );
+			$pdf->text( $x, 9, Ognivid_AI_PDF::enc( strtoupper( $bn ) ) );
+			$pdf->color( array( 255, 255, 255 ) );
+			$pdf->font( 'B', 15 );
+			$pdf->y = 15;
+			$pdf->para( $x, $w, $t['doc'] . ': ' . $b['title'], 7 );
+			$pdf->y = 42;
+
+			$kv = function ( $k, $v ) use ( $pdf, $x, $ink, $mut ) {
+				$pdf->need( 6 );
+				$top = $pdf->y;
+				$pdf->font( '', 9 );
+				$pdf->color( $mut );
+				$pdf->text( $x, $top, Ognivid_AI_PDF::enc( $k ) );
+				$pdf->color( $ink );
+				$pdf->para( $x + 50, 124, '' !== (string) $v ? (string) $v : '-', 5.6 );
+				$pdf->y = max( $pdf->y, $top + 6 );
 			};
-			$h2 = function ( $s ) use ( $pdf, $x ) {
-				$pdf->Ln( 3 );
-				$pdf->SetFont( 'Helvetica', 'B', 11 );
-				$pdf->SetTextColor( 17, 24, 39 );
-				$pdf->Cell( 0, 7, $x( $s ), 0, 1 );
-				$pdf->SetDrawColor( 229, 231, 235 );
-				$pdf->Line( 18, $pdf->GetY(), 192, $pdf->GetY() );
-				$pdf->Ln( 2 );
+			$h2 = function ( $s ) use ( $pdf, $x, $ink ) {
+				$pdf->y += 3;
+				$pdf->need( 14 );
+				$pdf->font( 'B', 11 );
+				$pdf->color( $ink );
+				$pdf->text( $x, $pdf->y, Ognivid_AI_PDF::enc( $s ) );
+				$pdf->y += 7;
+				$pdf->color( array( 229, 231, 235 ), 'draw' );
+				$pdf->hline( $x, $x + 174, $pdf->y );
+				$pdf->y += 2.5;
 			};
-			$para = function ( $s ) use ( $pdf, $x, $t ) {
-				$pdf->SetFont( 'Helvetica', '', 10 );
-				$pdf->SetTextColor( '' !== $s ? 17 : 107, '' !== $s ? 24 : 114, '' !== $s ? 39 : 128 );
-				$pdf->MultiCell( 0, 5.5, $x( '' !== $s ? $s : $t['none'] ), 0, 'L' );
+			$para = function ( $s ) use ( $pdf, $x, $w, $ink, $mut, $t ) {
+				$pdf->font( '', 10 );
+				$pdf->color( '' !== $s ? $ink : $mut );
+				$pdf->para( $x, $w, '' !== $s ? $s : $t['none'] );
 			};
-			$list = function ( $items ) use ( $pdf, $x, $para ) {
+			$list = function ( $items ) use ( $pdf, $x, $w, $ink, $para ) {
 				if ( empty( $items ) ) {
 					$para( '' );
 					return;
 				}
-				$pdf->SetFont( 'Helvetica', '', 10 );
-				$pdf->SetTextColor( 17, 24, 39 );
+				$pdf->font( '', 10 );
+				$pdf->color( $ink );
 				foreach ( $items as $i ) {
-					$pdf->Cell( 5, 5.5, '-', 0, 0 );
-					$pdf->MultiCell( 0, 5.5, $x( $i ), 0, 'L' );
+					$pdf->need( 5.4 );
+					$pdf->text( $x, $pdf->y, '-' );
+					$pdf->para( $x + 5, $w - 5, $i );
 				}
 			};
 
@@ -329,8 +344,11 @@ class OAA_Brief {
 
 			$dir  = self::ensure_storage();
 			$file = $dir . '/brief-' . $post_id . '-' . wp_generate_password( 10, false ) . '.pdf';
-			$pdf->Output( 'F', $file );
-			return file_exists( $file ) ? $file : '';
+			global $wp_filesystem;
+			if ( ! $wp_filesystem || ! $wp_filesystem->put_contents( $file, $pdf->output(), FS_CHMOD_FILE ) ) {
+				return '';
+			}
+			return $file;
 		} catch ( \Throwable $e ) {
 			return '';
 		}
@@ -350,7 +368,7 @@ class OAA_Brief {
 	}
 
 	public static function status_of( $post_id ) {
-		$s = get_post_meta( $post_id, '_oaa_status', true );
+		$s = get_post_meta( $post_id, '_ognivid_ai_status', true );
 		return isset( self::statuses()[ $s ] ) ? $s : 'read';
 	}
 
@@ -359,7 +377,7 @@ class OAA_Brief {
 			array(
 				'post_type'      => self::CPT,
 				'post_status'    => 'any',
-				'meta_key'       => '_oaa_status', // phpcs:ignore
+				'meta_key'       => '_ognivid_ai_status', // phpcs:ignore
 				'meta_value'     => 'new', // phpcs:ignore
 				'fields'         => 'ids',
 				'posts_per_page' => 1,
@@ -387,19 +405,19 @@ class OAA_Brief {
 		return array(
 			'cb'           => $cols['cb'],
 			'title'        => 'Brief',
-			'oaa_customer' => 'Customer',
-			'oaa_urgency'  => 'Urgency',
-			'oaa_source'   => 'Source',
-			'oaa_status'   => 'Status',
+			'ognivid_ai_customer' => 'Customer',
+			'ognivid_ai_urgency'  => 'Urgency',
+			'ognivid_ai_source'   => 'Source',
+			'ognivid_ai_status'   => 'Status',
 			'date'         => 'Received',
 		);
 	}
 
 	public static function column( $col, $post_id ) {
-		$b = json_decode( (string) get_post_meta( $post_id, '_oaa_brief', true ), true );
+		$b = json_decode( (string) get_post_meta( $post_id, '_ognivid_ai_brief', true ), true );
 		$b = $b ? self::normalize( $b ) : null;
 		switch ( $col ) {
-			case 'oaa_customer':
+			case 'ognivid_ai_customer':
 				if ( $b ) {
 					$c = $b['customer'];
 					echo '<strong>' . esc_html( $c['name'] ) . '</strong>' . ( $c['company'] ? '<br>' . esc_html( $c['company'] ) : '' );
@@ -410,16 +428,16 @@ class OAA_Brief {
 					}
 				}
 				break;
-			case 'oaa_urgency':
+			case 'ognivid_ai_urgency':
 				if ( $b ) {
 					$colors = array( 'low' => '#6b7280', 'medium' => '#2563eb', 'high' => '#d97706', 'critical' => '#dc2626' );
 					echo '<span style="display:inline-block;padding:2px 8px;border-radius:999px;color:#fff;font-size:12px;background:' . esc_attr( $colors[ $b['urgency'] ] ) . '">' . esc_html( ucfirst( $b['urgency'] ) ) . '</span>';
 				}
 				break;
-			case 'oaa_source':
-				echo 'form' === get_post_meta( $post_id, '_oaa_source', true ) ? 'Form' : 'AI chat';
+			case 'ognivid_ai_source':
+				echo 'form' === get_post_meta( $post_id, '_ognivid_ai_source', true ) ? 'Form' : 'AI chat';
 				break;
-			case 'oaa_status':
+			case 'ognivid_ai_status':
 				$s = self::status_of( $post_id );
 				$st = 'new' === $s ? 'font-weight:700;color:#2e8a0e' : '';
 				echo '<span style="' . esc_attr( $st ) . '">' . esc_html( self::statuses()[ $s ] ) . '</span>';
@@ -427,18 +445,23 @@ class OAA_Brief {
 		}
 	}
 
-	/** Bold rows for unread briefs. */
-	public static function admin_css() {
-		$screen = get_current_screen();
-		if ( ! $screen || self::CPT !== $screen->post_type ) {
+	/**
+	 * Admin list styles (bold unread rows, column widths).
+	 *
+	 * @param string $hook Current admin page.
+	 */
+	public static function admin_css( $hook ) {
+		if ( ! in_array( $hook, array( 'edit.php', 'post.php' ), true ) || self::CPT !== get_post_type() && ( ! isset( $_GET['post_type'] ) || self::CPT !== $_GET['post_type'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
-		echo '<style>.post-type-oaa_brief tr.oaa-new .row-title{font-weight:800}.post-type-oaa_brief tr.oaa-new{box-shadow:inset 3px 0 0 #2e8a0e}.post-type-oaa_brief .column-oaa_customer{width:24%}.post-type-oaa_brief .column-oaa_urgency,.post-type-oaa_brief .column-oaa_source,.post-type-oaa_brief .column-oaa_status{width:10%}</style>';
+		wp_register_style( 'ognivid-ai-admin', false, array(), OGNIVID_AI_VERSION );
+		wp_enqueue_style( 'ognivid-ai-admin' );
+		wp_add_inline_style( 'ognivid-ai-admin', '.post-type-ognivid_ai_brief tr.ognivid-ai-new .row-title{font-weight:800}.post-type-ognivid_ai_brief tr.ognivid-ai-new{box-shadow:inset 3px 0 0 #2e8a0e}.post-type-ognivid_ai_brief .column-ognivid_ai_customer{width:24%}.post-type-ognivid_ai_brief .column-ognivid_ai_urgency,.post-type-ognivid_ai_brief .column-ognivid_ai_source,.post-type-ognivid_ai_brief .column-ognivid_ai_status{width:10%}' );
 	}
 
 	public static function row_class( $classes, $class, $post_id ) {
 		if ( is_admin() && self::CPT === get_post_type( $post_id ) && 'new' === self::status_of( $post_id ) ) {
-			$classes[] = 'oaa-new';
+			$classes[] = 'ognivid-ai-new';
 		}
 		return $classes;
 	}
@@ -448,8 +471,8 @@ class OAA_Brief {
 		if ( self::CPT !== $post_type ) {
 			return;
 		}
-		$cur = isset( $_GET['oaa_status'] ) ? sanitize_key( $_GET['oaa_status'] ) : ''; // phpcs:ignore
-		echo '<select name="oaa_status"><option value="">All statuses</option>';
+		$cur = isset( $_GET['ognivid_ai_status'] ) ? sanitize_key( $_GET['ognivid_ai_status'] ) : ''; // phpcs:ignore
+		echo '<select name="ognivid_ai_status"><option value="">All statuses</option>';
 		foreach ( self::statuses() as $k => $l ) {
 			echo '<option value="' . esc_attr( $k ) . '"' . selected( $cur, $k, false ) . '>' . esc_html( $l ) . '</option>';
 		}
@@ -460,38 +483,38 @@ class OAA_Brief {
 		if ( ! is_admin() || ! $query->is_main_query() || self::CPT !== $query->get( 'post_type' ) ) {
 			return;
 		}
-		$s = isset( $_GET['oaa_status'] ) ? sanitize_key( $_GET['oaa_status'] ) : ''; // phpcs:ignore
+		$s = isset( $_GET['ognivid_ai_status'] ) ? sanitize_key( $_GET['ognivid_ai_status'] ) : ''; // phpcs:ignore
 		if ( $s && isset( self::statuses()[ $s ] ) ) {
 			if ( 'read' === $s ) {
-				$query->set( 'meta_query', array( 'relation' => 'OR', array( 'key' => '_oaa_status', 'value' => 'read' ), array( 'key' => '_oaa_status', 'compare' => 'NOT EXISTS' ) ) );
+				$query->set( 'meta_query', array( 'relation' => 'OR', array( 'key' => '_ognivid_ai_status', 'value' => 'read' ), array( 'key' => '_ognivid_ai_status', 'compare' => 'NOT EXISTS' ) ) );
 			} else {
-				$query->set( 'meta_key', '_oaa_status' );
+				$query->set( 'meta_key', '_ognivid_ai_status' );
 				$query->set( 'meta_value', $s );
 			}
 		}
 	}
 
 	public static function meta_boxes() {
-		add_meta_box( 'oaa_brief_view', 'Project Brief', array( __CLASS__, 'render_box' ), self::CPT, 'normal', 'high' );
-		add_meta_box( 'oaa_brief_status', 'Follow-up', array( __CLASS__, 'render_status_box' ), self::CPT, 'side', 'high' );
+		add_meta_box( 'ognivid_ai_brief_view', 'Project Brief', array( __CLASS__, 'render_box' ), self::CPT, 'normal', 'high' );
+		add_meta_box( 'ognivid_ai_brief_status', 'Follow-up', array( __CLASS__, 'render_status_box' ), self::CPT, 'side', 'high' );
 	}
 
 	public static function render_status_box( $post ) {
-		wp_nonce_field( 'oaa_status_' . $post->ID, 'oaa_status_nonce' );
+		wp_nonce_field( 'ognivid_ai_status_' . $post->ID, 'ognivid_ai_status_nonce' );
 		$cur = self::status_of( $post->ID );
 		if ( 'new' === $cur ) {
 			$cur = 'read'; // viewing this screen marks the brief as read
 		}
-		echo '<p><label for="oaa_status_field"><strong>Status</strong></label><br><select id="oaa_status_field" name="oaa_status_field" style="width:100%">';
+		echo '<p><label for="ognivid_ai_status_field"><strong>Status</strong></label><br><select id="ognivid_ai_status_field" name="ognivid_ai_status_field" style="width:100%">';
 		foreach ( self::statuses() as $k => $l ) {
 			echo '<option value="' . esc_attr( $k ) . '"' . selected( $cur, $k, false ) . '>' . esc_html( $l ) . '</option>';
 		}
 		echo '</select></p>';
-		echo '<p><label for="oaa_note_field"><strong>Internal note</strong></label><textarea id="oaa_note_field" name="oaa_note_field" rows="5" style="width:100%">' . esc_textarea( (string) get_post_meta( $post->ID, '_oaa_note', true ) ) . '</textarea></p>';
-		$b = json_decode( (string) get_post_meta( $post->ID, '_oaa_brief', true ), true );
+		echo '<p><label for="ognivid_ai_note_field"><strong>Internal note</strong></label><textarea id="ognivid_ai_note_field" name="ognivid_ai_note_field" rows="5" style="width:100%">' . esc_textarea( (string) get_post_meta( $post->ID, '_ognivid_ai_note', true ) ) . '</textarea></p>';
+		$b = json_decode( (string) get_post_meta( $post->ID, '_ognivid_ai_brief', true ), true );
 		if ( $b ) {
 			$b    = self::normalize( $b );
-			$subj = rawurlencode( 'Re: ' . $b['title'] . ' (' . get_post_meta( $post->ID, '_oaa_ref', true ) . ')' );
+			$subj = rawurlencode( 'Re: ' . $b['title'] . ' (' . get_post_meta( $post->ID, '_ognivid_ai_ref', true ) . ')' );
 			echo '<p><a class="button" style="width:100%;text-align:center" href="mailto:' . esc_attr( $b['customer']['email'] ) . '?subject=' . esc_attr( $subj ) . '">Reply by email</a></p>';
 			$wa = preg_replace( '/\D+/', '', $b['customer']['phone'] );
 			if ( strlen( $wa ) >= 8 ) {
@@ -502,38 +525,38 @@ class OAA_Brief {
 	}
 
 	public static function save_status( $post_id ) {
-		if ( ! isset( $_POST['oaa_status_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['oaa_status_nonce'] ) ), 'oaa_status_' . $post_id ) ) {
+		if ( ! isset( $_POST['ognivid_ai_status_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ognivid_ai_status_nonce'] ) ), 'ognivid_ai_status_' . $post_id ) ) {
 			return;
 		}
 		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
-		$s = isset( $_POST['oaa_status_field'] ) ? sanitize_key( $_POST['oaa_status_field'] ) : '';
+		$s = isset( $_POST['ognivid_ai_status_field'] ) ? sanitize_key( $_POST['ognivid_ai_status_field'] ) : '';
 		if ( isset( self::statuses()[ $s ] ) ) {
-			update_post_meta( $post_id, '_oaa_status', $s );
+			update_post_meta( $post_id, '_ognivid_ai_status', $s );
 		}
-		if ( isset( $_POST['oaa_note_field'] ) ) {
-			update_post_meta( $post_id, '_oaa_note', sanitize_textarea_field( wp_unslash( $_POST['oaa_note_field'] ) ) );
+		if ( isset( $_POST['ognivid_ai_note_field'] ) ) {
+			update_post_meta( $post_id, '_ognivid_ai_note', sanitize_textarea_field( wp_unslash( $_POST['ognivid_ai_note_field'] ) ) );
 		}
 	}
 
 	public static function render_box( $post ) {
-		$b = json_decode( (string) get_post_meta( $post->ID, '_oaa_brief', true ), true );
+		$b = json_decode( (string) get_post_meta( $post->ID, '_ognivid_ai_brief', true ), true );
 		if ( ! $b ) {
 			echo '<p>No data.</p>';
 			return;
 		}
-		if ( 'new' === get_post_meta( $post->ID, '_oaa_status', true ) ) {
-			update_post_meta( $post->ID, '_oaa_status', 'read' ); // opening a brief marks it as read
+		if ( 'new' === get_post_meta( $post->ID, '_ognivid_ai_status', true ) ) {
+			update_post_meta( $post->ID, '_ognivid_ai_status', 'read' ); // opening a brief marks it as read
 		}
-		$ref = get_post_meta( $post->ID, '_oaa_ref', true );
-		$pdf = get_post_meta( $post->ID, '_oaa_pdf', true );
+		$ref = get_post_meta( $post->ID, '_ognivid_ai_ref', true );
+		$pdf = get_post_meta( $post->ID, '_ognivid_ai_pdf', true );
 		if ( $pdf && file_exists( $pdf ) ) {
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=oaa_brief_pdf&post=' . $post->ID ), 'oaa_pdf_' . $post->ID );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=ognivid_ai_brief_pdf&post=' . $post->ID ), 'ognivid_ai_pdf_' . $post->ID );
 			echo '<p><a class="button button-primary" href="' . esc_url( $url ) . '">Download PDF</a></p>';
 		}
-		echo self::html( self::normalize( $b ), $ref, get_post_meta( $post->ID, '_oaa_source', true ) ); // phpcs:ignore WordPress.Security.EscapeOutput
-		$tr = get_post_meta( $post->ID, '_oaa_transcript', true );
+		echo wp_kses_post( self::html( self::normalize( $b ), $ref, get_post_meta( $post->ID, '_ognivid_ai_source', true ) ) );
+		$tr = get_post_meta( $post->ID, '_ognivid_ai_transcript', true );
 		if ( $tr ) {
 			echo '<h3>Conversation transcript</h3><pre style="white-space:pre-wrap;background:#f6f7f7;padding:12px;max-height:480px;overflow:auto">' . esc_html( $tr ) . '</pre>';
 		}
@@ -541,18 +564,18 @@ class OAA_Brief {
 
 	public static function download_pdf() {
 		$id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
-		if ( ! $id || ! current_user_can( 'edit_post', $id ) || ! wp_verify_nonce( isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '', 'oaa_pdf_' . $id ) ) {
+		if ( ! $id || ! current_user_can( 'edit_post', $id ) || ! wp_verify_nonce( isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '', 'ognivid_ai_pdf_' . $id ) ) {
 			wp_die( 'Not allowed', 403 );
 		}
-		$pdf = get_post_meta( $id, '_oaa_pdf', true );
+		$pdf = get_post_meta( $id, '_ognivid_ai_pdf', true );
 		if ( ! $pdf || ! file_exists( $pdf ) ) {
 			wp_die( 'PDF not found', 404 );
 		}
 		nocache_headers();
 		header( 'Content-Type: application/pdf' );
-		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( get_post_meta( $id, '_oaa_ref', true ) . '.pdf' ) . '"' );
+		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( get_post_meta( $id, '_ognivid_ai_ref', true ) . '.pdf' ) . '"' );
 		header( 'Content-Length: ' . filesize( $pdf ) );
-		readfile( $pdf ); // phpcs:ignore
+		readfile( $pdf ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 		exit;
 	}
 }

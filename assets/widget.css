@@ -27,7 +27,7 @@
 .oaa-input{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--oaa-line)}
 .oaa-input[hidden]{display:none}
 .oaa-input textarea{flex:1;resize:none;border:1px solid var(--oaa-line);border-radius:10px;padding:9px 10px;font-size:14px;line-height:1.4;color:var(--oaa-ink);background:#fff;max-height:120px}
-.oaa-input button,.oaa-submit{border:0;border-radius:10px;padding:0 14px;background:var(--oaa-accent);color:#111;font-weight:700;cursor:pointer}
+.oaa-input button,.oaa-submit{border:0;border-radius:10px;padding:0 14px;background:var(--oaa-accent);color:var(--oaa-on-accent,#111);font-weight:700;cursor:pointer}
 .oaa-input button:disabled,.oaa-submit:disabled{opacity:.6;cursor:default}
 .oaa-foot{padding:0 12px 10px;text-align:center}
 .oaa-switch{background:none;border:0;color:var(--oaa-muted);text-decoration:underline;cursor:pointer;font-size:12px}
